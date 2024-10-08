@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Página de Sucesso</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 20px;
+        display: flex; /* Usando flexbox para layout */
+        flex-direction: column; /* Alinhando verticalmente */
+      }
+      .top-section {
+        margin-bottom: 20px; /* Espaçamento entre a parte superior e o restante da página */
+        text-align: center; /* Centralizando a imagem e a mensagem */
+      }
+      .content {
+        display: flex; /* Usando flexbox para colocar cardapio e form-container lado a lado */
+        gap: 20px; /* Espaçamento entre os dois componentes */
+        align-items: stretch; /* Faz os itens filhos terem a mesma altura */
+      }
+      .cardapio {
+        border: 1px solid #ccc;
+        border-radius: 8px;
+        padding: 20px; /* Reduzido */
+        margin-top: 20px;
+        background-color: #f9f9f9;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        justify-content: flex-start;
+        width: 300px; /* Largura definida */
+      }
+      .item-cardapio {
+        margin: 5px 0; /* Reduzido */
+        font-size: 16px; /* Tamanho da fonte reduzido */
+        font-family: "Arial", sans-serif;
+      }
+      .form-container {
+        display: flex;
+        flex-direction: column; /* Coloca os campos em coluna */
+        justify-content: flex-start; /* Alinha os campos ao topo */
+        gap: 10px; /* Espaçamento entre os campos */
+        width: 300px; /* Largura definida para os campos */
+      }
+      .form-container input {
+        padding: 10px; /* Espaçamento interno nos campos */
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        font-size: 16px; /* Tamanho da fonte dos campos */
+      }
+      .enviar-button {
+        padding: 10px;
+        border: none;
+        border-radius: 4px;
+        background-color: #4caf50; /* Cor do botão */
+        color: white; /* Cor do texto do botão */
+        font-size: 16px; /* Tamanho da fonte do botão */
+        cursor: pointer; /* Cursor em forma de mão ao passar sobre o botão */
+      }
+      .enviar-button:hover {
+        background-color: #45a049; /* Cor ao passar o mouse sobre o botão */
+      }
+    </style>
+  </head>
+  <body>
+    <div class="top-section">
+      <img
+        src="images/1114350.png"
+        alt="coffee"
+        class="imagem-formulario"
+        style="width: 100px"
+      />
+      <p id="info"></p>
+    </div>
+
+    <div class="content">
+      <!-- Novo contêiner flexível para cardápio e formulário -->
+      <div class="cardapio">
+        <h3>Cardápio:</h3>
+        <div id="itens-cardapio"></div>
+        <!-- Container para os itens do cardápio -->
+      </div>
+
+      <div class="form-container">
+        <input type="text" placeholder="Escolha do produto" />
+        <input type="text" placeholder="Tipo do produto" />
+        <input type="number" placeholder="Quantidade" />
+        <button class="enviar-button">Enviar</button>
+      </div>
+    </div>
+
+    <script src="mainScript.js"></script>
+    <!-- Referência ao arquivo script.js -->
+
+    <script>
+      // Recupera os dados do localStorage
+      const nome = localStorage.getItem("nome");
+      const email = localStorage.getItem("email");
+      const pass = localStorage.getItem("pass");
+
+      const mensagemCliente = nome
+        ? `Olá, ${nome}! Estamos felizes em tê-lo conosco.`
+        : "Olá! Seja bem-vindo ao nosso site.";
+
+      // Exibe os dados na página
+      document.getElementById("info").innerHTML = `
+            <div style="font-family: Arial, sans-serif; padding: 10px; background-color: #f9f9f9; border-radius: 5px;">
+                <h2 style="color: #333;">${mensagemCliente}</h2>
+                <p><strong>Email:</strong> ${email || "Não fornecido"}</p>
+            </div>
+        `;
+    </script>
+  </body>
+</html>

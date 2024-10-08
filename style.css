@@ -1,0 +1,123 @@
+/* Centralizar todo o conteúdo da página */
+body {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh; /* Preenche toda a altura da tela */
+  margin: 0;
+  font: 62.5%/1 "Myriad Pro", Frutiger, "Lucida Grande", "Lucida Sans",
+    "Lucida Sans Unicode", Verdana, sans-serif;
+  background-color: #f4f4f4;
+}
+
+/* Centraliza o conteúdo dentro da div container */
+.container {
+  width: 300px; /* Defina a largura desejada */
+  margin: 0 auto; /* Centraliza horizontalmente */
+  text-align: center; /* Centraliza o texto dentro do contêiner */
+  border: 1px solid #ccc; /* Opcional: borda para o contêiner */
+  padding: 20px; /* Espaçamento interno */
+  border-radius: 8px; /* Bordas arredondadas */
+}
+
+/* Estilo para a imagem */
+.imagem-formulario {
+  max-width: 100%; /* Faz a imagem se ajustar à largura da tela */
+  height: auto; /* Mantém a proporção da imagem */
+  position: absolute;
+  margin-bottom: 20px; /* Espaço abaixo da imagem */
+  top: 10px;
+  left: 0;
+}
+
+/* Estilo para o formulário */
+form {
+  font-size: 1.4em;
+  width: 30em;
+  background-color: #ffffff;
+  padding: 2em;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Adiciona sombra */
+}
+
+/* fieldset styling */
+fieldset {
+  margin: 1em 0;
+  padding: 1em;
+  border: 1px solid #ccc;
+  background-color: #f7f7f7;
+  border-radius: 10px;
+}
+
+/* legend styling */
+legend {
+  font-weight: bold;
+}
+
+/* style for labels */
+label {
+  display: block;
+}
+
+label .required {
+  font-size: 0.75em;
+  color: #760000;
+}
+
+input {
+  width: 200px;
+}
+
+input.radio,
+input.submit {
+  width: auto;
+}
+
+/* style form elements on focus */
+input:focus,
+textarea:focus {
+  border-color: #8b0000;
+  outline: none;
+  box-shadow: 0 0 5px #8b0000;
+  background: #ffc;
+}
+
+input.radio {
+  float: left;
+  margin-right: 1em;
+}
+
+textarea {
+  width: 300px;
+  height: 100px;
+}
+
+/* Estilo para o botão de submit */
+input[type="button"] {
+  background-color: #8b0000;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  font-size: 1.2em;
+  cursor: pointer;
+  border-radius: 5px;
+}
+
+input[type="button"]:hover {
+  background-color: #5c0000;
+}
+
+/* Espaçamento entre os campos */
+p {
+  margin-bottom: 1em;
+}
+
+/* Estilo para erro */
+input.error {
+  border-color: #ff0000;
+  background-color: #ffe6e6;
+}
+
+label.error {
+  color: #ff0000;
+}

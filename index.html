@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Formulário de Pedido</title>
+    <link rel="stylesheet" href="style.css" />
+    <style>
+      body {
+        margin: 0; /* Remove a margem padrão do body */
+        background-color: #f4f4f4; /* Cor de fundo opcional */
+        font-family: "Myriad Pro", Frutiger, "Lucida Grande", "Lucida Sans",
+          "Lucida Sans Unicode", Verdana, sans-serif; /* Fonte opcional */
+      }
+
+      .container {
+        width: 500px; /* Aumenta a largura do contêiner */
+        margin: 0 auto; /* Centraliza horizontalmente */
+        text-align: center; /* Centraliza o texto dentro do contêiner */
+        border: 1px solid #ccc; /* Opcional: borda para o contêiner */
+        padding: 30px; /* Aumenta o espaçamento interno */
+        border-radius: 8px; /* Bordas arredondadas */
+        background-color: white; /* Cor de fundo opcional */
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <!-- Adicione sua imagem aqui -->
+      <img
+        src="images/1114350.png"
+        alt="coffee"
+        class="imagem-formulario"
+        style="width: 100px"
+      />
+
+      <h1>Formulário de Pedido</h1>
+
+      <!-- Formulário para coleta de informações -->
+      <form id="comments_form" action="#" method="post">
+        <fieldset>
+          <legend>Informações Sobre o Pedido</legend>
+          <p>
+            <label for="nome"
+              >Nome: <em class="required">(Obrigatório)</em></label
+            >
+            <input name="nome" id="nome" type="text" />
+          </p>
+          <p>
+            <label for="email">Email:</label>
+            <input name="email" id="email" type="text" />
+          </p>
+          <p>
+            <label for="pass">Senha:</label>
+            <input name="pass" id="pass" type="password" />
+          </p>
+        </fieldset>
+        <!-- Botão de envio -->
+        <p>
+          <input type="button" value="Enviar!" id="btnSubmit" />
+        </p>
+      </form>
+    </div>
+    <script src="script.js"></script>
+  </body>
+</html>
