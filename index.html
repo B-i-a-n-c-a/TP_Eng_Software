@@ -3,37 +3,120 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Formulário de Pedido</title>
-    <link rel="stylesheet" href="style.css" />
+    <title>Café Urban</title>
+    <link rel="icon" href="images/logo.png" type="image/png" />
     <style>
+    
       body {
-        margin: 0; /* Remove a margem padrão do body */
-        background-color: #f4f4f4; /* Cor de fundo opcional */
-        font-family: "Myriad Pro", Frutiger, "Lucida Grande", "Lucida Sans",
-          "Lucida Sans Unicode", Verdana, sans-serif; /* Fonte opcional */
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh; 
+        margin: 0;
+        background-color: white;
+
+      }
+
+      .top-section {
+        margin-bottom: 20px; 
+        text-align: center; 
+      }
+
+      .imagem-formulario {
+        max-width: 100%; 
+        height: auto; 
+        display: block; 
+        margin: 0 auto 20px; 
       }
 
       .container {
-        width: 500px; /* Aumenta a largura do contêiner */
-        margin: 0 auto; /* Centraliza horizontalmente */
-        text-align: center; /* Centraliza o texto dentro do contêiner */
-        border: 1px solid #ccc; /* Opcional: borda para o contêiner */
-        padding: 30px; /* Aumenta o espaçamento interno */
-        border-radius: 8px; /* Bordas arredondadas */
-        background-color: white; /* Cor de fundo opcional */
+        width: 600px; 
+        margin: 0 auto; 
+        text-align: center; 
+        border: 1px solid #ccc; 
+        padding: 30px; 
+        border-radius: 8px;
+        background-color: white; 
+        font-size: 20px;
+      }
+
+      form {
+        font-family: 'Georgia', serif; 
+        width: 100%; 
+        padding: 2em; 
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); 
+      }
+
+      fieldset {
+        margin: 1em 0;
+        padding: 1em;
+        border: none; 
+        background-color: transparent; 
+      }
+
+      legend {
+        font-weight: bold;
+      }
+
+      label {
+        display: block;
+      }
+
+      label .required {
+        font-size: 0.90em;
+        color: black;
+      }
+
+      input {
+        width: 100%; 
+        padding: 10px; 
+        margin: 10px 0; 
+        border: 1px solid #ccc; 
+        border-radius: 10px; 
+      }
+
+      /* Estilo para o botão de submit */
+      input[type="button"] {
+        background-color: black;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        font-size: 1.2em;
+        cursor: pointer;
+        border-radius: 5px;
+      }
+
+      input[type="button"]:hover {
+        background-color: black;
+      }
+
+      /* Espaçamento entre os campos */
+      p {
+        margin-bottom: 1em;
+      }
+
+      /* Estilo para erro */
+      input.error {
+        border-color: #ff0000;
+        background-color: #ffe6e6;
+      }
+
+      label.error {
+        color: #ff0000;
       }
     </style>
   </head>
   <body>
-    <div class="container">
-      <!-- Adicione sua imagem aqui -->
+    <div class="top-section">
       <img
-        src="images/1114350.png"
+        src="images/logo.png"
         alt="coffee"
         class="imagem-formulario"
-        style="width: 100px"
       />
+      <p id="info"></p>
+    </div>
 
+    <div class="container">
       <h1>Formulário de Pedido</h1>
 
       <!-- Formulário para coleta de informações -->
@@ -42,8 +125,7 @@
           <legend>Informações Sobre o Pedido</legend>
           <p>
             <label for="nome"
-              >Nome: <em class="required">(Obrigatório)</em></label
-            >
+              >Nome: <em class="required">(Obrigatório)</em></label>
             <input name="nome" id="nome" type="text" />
           </p>
           <p>
