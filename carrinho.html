@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Carrinho de Compras</title>
+    <style>
+      body {
+        font-family: "Georgia", serif;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        background-color: white;
+      }
+
+      .container {
+        width: 600px;
+        margin: 0 auto;
+        text-align: center;
+        border: 1px solid #ccc;
+        padding: 30px;
+        border-radius: 8px;
+        background-color: #f9f9f9;
+        font-size: 20px;
+      }
+
+      table {
+        width: 100%;
+        margin-bottom: 20px;
+        border-collapse: collapse;
+      }
+
+      table,
+      th,
+      td {
+        border: 1px solid #ccc;
+        padding: 10px;
+        text-align: center;
+      }
+
+      th {
+        background-color: #ddd;
+      }
+
+      .button {
+        background-color: black;
+        color: white;
+        padding: 10px 20px;
+        text-align: center;
+        text-decoration: none;
+        display: inline-block;
+        border-radius: 5px;
+        cursor: pointer;
+      }
+
+      .button:hover {
+        background-color: #333;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>Carrinho de Compras</h1>
+      <table id="tabela-carrinho">
+        <thead>
+          <tr>
+            <th>Produto</th>
+            <th>Quantidade</th>
+            <th>Preço</th>
+            <th>Ações</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+
+      <button class="button" id="adicionar-item">Adicionar Outro Item</button>
+      <button class="button" id="finalizar-compra">Finalizar Compra</button>
+    </div>
+
+    <script>
+      const carrinho = JSON.parse(localStorage.getItem("carrinho")) || [];
+
+      function exibirCarrinho() {
+        const tabela = document
+          .getElementById("tabela-carrinho")
+          .getElementsByTagName("tbody")[0];
+        tabela.innerHTML = "";
+
+        carrinho.forEach((item, index) => {
+          const row = tabela.insertRow();
+          row.innerHTML = `
+            <td>${item.produto}</td>
+            <td>${item.quantidade}</td>
+            <td>${item.preco}</td>
+            <td><button onclick="removerItem(${index})">Remover</button></td>
+          `;
+        });
+      }
+
+      function removerItem(index) {
+        carrinho.splice(index, 1);
+        localStorage.setItem("carrinho", JSON.stringify(carrinho));
+        exibirCarrinho();
+      }
+
+      document
+        .getElementById("adicionar-item")
+        .addEventListener("click", function () {
+          window.location.href = "page.html";
+        });
+
+      document
+        .getElementById("finalizar-compra")
+        .addEventListener("click", function () {
+          const nome = localStorage.getItem("nome");
+          const email = localStorage.getItem("email");
+
+          let texto = `Cliente: ${nome}\nEmail para contato: ${email}\n`;
+          carrinho.forEach((item) => {
+            texto += `\nProduto: ${item.produto},\nQuantidade: ${item.quantidade},\nPreco: ${item.preco}\nTipo: ${item.tipo}\n`;
+          });
+          const blob = new Blob([texto], { type: "text/plain" });
+          const link = document.createElement("a");
+          link.href = URL.createObjectURL(blob);
+          link.download = "carrinho.txt";
+          link.click();
+
+          alert("Compra finalizada!");
+          localStorage.removeItem("carrinho");
+          window.location.href = "index.html";
+        });
+      exibirCarrinho();
+    </script>
+  </body>
+</html>

@@ -6,52 +6,50 @@
     <title>Café Urban</title>
     <link rel="icon" href="images/logo.png" type="image/png" />
     <style>
-    
       body {
         display: flex;
         justify-content: center;
         align-items: center;
-        height: 100vh; 
+        height: 100vh;
         margin: 0;
         background-color: white;
-
       }
 
       .top-section {
-        margin-bottom: 20px; 
-        text-align: center; 
+        margin-bottom: 20px;
+        text-align: center;
       }
 
       .imagem-formulario {
-        max-width: 100%; 
-        height: auto; 
-        display: block; 
-        margin: 0 auto 20px; 
+        max-width: 100%;
+        height: auto;
+        display: block;
+        margin: 0 auto 20px;
       }
 
       .container {
-        width: 600px; 
-        margin: 0 auto; 
-        text-align: center; 
-        border: 1px solid #ccc; 
-        padding: 30px; 
+        width: 600px;
+        margin: 0 auto;
+        text-align: center;
+        border: 1px solid #ccc;
+        padding: 30px;
         border-radius: 8px;
-        background-color: white; 
+        background-color: white;
         font-size: 20px;
       }
 
       form {
-        font-family: 'Georgia', serif; 
-        width: 100%; 
-        padding: 2em; 
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); 
+        font-family: "Georgia", serif;
+        width: 100%;
+        padding: 2em;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
       }
 
       fieldset {
         margin: 1em 0;
         padding: 1em;
-        border: none; 
-        background-color: transparent; 
+        border: none;
+        background-color: transparent;
       }
 
       legend {
@@ -63,19 +61,18 @@
       }
 
       label .required {
-        font-size: 0.90em;
+        font-size: 0.9em;
         color: black;
       }
 
       input {
-        width: 100%; 
-        padding: 10px; 
-        margin: 10px 0; 
-        border: 1px solid #ccc; 
-        border-radius: 10px; 
+        width: 100%;
+        padding: 10px;
+        margin: 10px 0;
+        border: 1px solid #ccc;
+        border-radius: 10px;
       }
 
-      /* Estilo para o botão de submit */
       input[type="button"] {
         background-color: black;
         color: white;
@@ -90,12 +87,10 @@
         background-color: black;
       }
 
-      /* Espaçamento entre os campos */
       p {
         margin-bottom: 1em;
       }
 
-      /* Estilo para erro */
       input.error {
         border-color: #ff0000;
         background-color: #ffe6e6;
@@ -108,24 +103,20 @@
   </head>
   <body>
     <div class="top-section">
-      <img
-        src="images/logo.png"
-        alt="coffee"
-        class="imagem-formulario"
-      />
+      <img src="images/logo.png" alt="coffee" class="imagem-formulario" />
       <p id="info"></p>
     </div>
 
     <div class="container">
       <h1>Formulário de Pedido</h1>
 
-      <!-- Formulário para coleta de informações -->
       <form id="comments_form" action="#" method="post">
         <fieldset>
           <legend>Informações Sobre o Pedido</legend>
           <p>
             <label for="nome"
-              >Nome: <em class="required">(Obrigatório)</em></label>
+              >Nome: <em class="required">(Obrigatório)</em></label
+            >
             <input name="nome" id="nome" type="text" />
           </p>
           <p>
@@ -137,7 +128,6 @@
             <input name="pass" id="pass" type="password" />
           </p>
         </fieldset>
-        <!-- Botão de envio -->
         <p>
           <input type="button" value="Enviar!" id="btnSubmit" />
         </p>
