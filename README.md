@@ -24,7 +24,7 @@
 
 
 ## **Membros da Equipe:**
-**Bianca:** `Scrum Master`
+**Bianca:** `Desenvolvedora Frontend`
 
 **Mateus:** `Desenvolvedor Backend`
 
@@ -130,7 +130,7 @@ Possibilidade de exportar relatórios em formatos como CSV ou PDF.
 
 **História 1:**
 
-Configuração do Ambiente de Desenvolvimento `[Bianca]`
+Configuração do Ambiente de Desenvolvimento `[Mateus]`
 
 Como desenvolvedor, quero configurar o ambiente de desenvolvimento para que eu possa começar a trabalhar no projeto com todas as ferramentas e tecnologias necessárias.
 
@@ -154,7 +154,7 @@ Configurar a conexão do banco de dados no projeto e testar a integração.
 
 **História 3:**
 
-Implementação das Telas de Cadastro e Login `[Tomaz]`
+Implementação das Telas de Cadastro e Login `[Bianca]`
 
 Como usuário, quero ter acesso às telas de cadastro e login para que eu possa criar uma conta e acessar o sistema.
 
