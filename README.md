@@ -33,13 +33,7 @@
 **Thiago:** `Desenvolvedor Backend`
 
 ## **Tecnologias:**
-Pyhton
-
-Flask
-
 HTML/CSS/JavaScript
-
-SQLite
 
 # **Backlogs do produto:**
 
