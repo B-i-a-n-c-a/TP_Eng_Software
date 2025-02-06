@@ -35,6 +35,60 @@ As seguintes ferramentas foram usadas na construção do projeto:
 1. Como profissional, quero registrar minha identificação ao aplicar uma vacina para que o histórico do usuário contenha informações sobre quem administra a dose.
 2. Como profissional, quero atualizar o status de vacinação dos usuários para que o histórico de vacinação esteja sempre correto e atualizado.
 
+{
+
+1. Elicitação de Requisitos:
+
+  Fontes de informação: Histórias de usuário, funcionalidades principais.
+  Técnicas utilizadas: Análise de histórias de usuário, brainstorming.
+
+2. Análise e Especificação de Requisitos:
+
+Requisitos Funcionais:
+
+Cadastro de usuários:
+
+  O sistema deve permitir o cadastro de usuários com informações como nome completo, data de nascimento, CPF, endereço, telefone e e-mail.
+  O sistema deve validar os dados de entrada para garantir a integridade das informações.
+  O sistema deve gerar um identificador único para cada usuário cadastrado.
+
+Cadastro de profissionais da saúde:
+
+  O sistema deve permitir o cadastro de profissionais da saúde com informações como nome completo, registro profissional (CRM, COREN, etc.), especialidade e contato.
+  O sistema deve validar os dados de entrada para garantir a integridade das informações.
+  O sistema deve gerar um identificador único para cada profissional cadastrado.
+
+Catalogação de vacinas:
+
+  O sistema deve permitir o cadastro de vacinas com informações como nome, fabricante, lote, data de validade, tipo e doenças que previne.
+  O sistema deve validar os dados de entrada para garantir a integridade das informações.
+  O sistema deve gerar um identificador único para cada vacina cadastrada.
+
+Atualização de status de usuários:
+  
+  O sistema deve permitir que profissionais da saúde atualizem o status de vacinação dos usuários, registrando a data de aplicação, a vacina aplicada e o profissional responsável.
+  O sistema deve validar os dados de entrada para garantir a integridade das informações.
+  Associação de profissionais ao registro de vacinação:
+  O sistema deve associar automaticamente o profissional da saúde que registrou a aplicação da vacina ao histórico de vacinação do usuário.
+  Alertas sobre vacinas pendentes:
+  O sistema deve gerar alertas para usuários sobre vacinas pendentes, com base no calendário de vacinação e nas informações de vacinação do usuário.
+  Os alertas devem ser enviados por e-mail ou SMS, de acordo com a preferência do usuário.
+  Indicação de vacinas recomendadas pela idade:
+  O sistema deve indicar as vacinas já recomendadas para a idade do usuário, com base no calendário de vacinação.
+  Essa informação deve ser exibida no cartão de vacinação do usuário.
+  Cartão de vacinação detalhado:
+  O sistema deve gerar um cartão de vacinação detalhado para cada usuário, contendo informações sobre as vacinas já aplicadas, as vacinas pendentes, as datas de aplicação, os profissionais responsáveis e as vacinas recomendadas para a idade.
+  O cartão de vacinação deve ser acessível online e impresso, se necessário.
+
+Requisitos Não Funcionais:
+
+  Desempenho: O sistema deve ser responsivo e garantir o acesso rápido às informações.
+  Segurança: O sistema deve garantir a segurança dos dados dos usuários e profissionais da saúde, protegendo-os contra acesso não autorizado.
+  Usabilidade: O sistema deve ser intuitivo e fácil de usar, tanto para usuários quanto para profissionais da saúde.
+  Disponibilidade: O sistema deve estar disponível 24 horas por dia, 7 dias por semana, com o mínimo de interrupções.
+
+}
+
 ### 🖥️ Casos de uso  
 - [ ] 1. Cadastro de usuários  
 **Descrição:** Permite que um cidadão realize seu cadastro no sistema.  
