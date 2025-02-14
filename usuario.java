@@ -1,51 +1,39 @@
-public class usuario {
-    private String nome;
-    private int idade;
-    private String cpf;
-    private String endereco;
+public class usuario extends Pessoa{
     private String vacinas;
     private String proxDose;
     
-    public usuario (){
+    public usuario (String nome, String cpf, String endereco, String email, String vacinas, String proxDose) {
         this.nome = nome;
         this.cpf = cpf;
         this.endereco = endereco;
+        this.email = email;
         this.idade = idade;
         this.vacinas = vacinas;
     }
 
-    public String getNome() {
-        return nome;
-    }
-    public void setNome(String nome) {
-        this.nome = nome;
-    }
-    
-    public int getIdade() {
-        return idade;
-    }
-    public void setIdade(int idade) {
-        this.idade = idade;
+    public usuario (){
+        this.nome = "exemplo";
+        this.cpf = "111.111.111-11";
+        this.endereco = "endereco";
+        this.idade = 0;
+        this.email = "exemplo@exemplo.com";
+        this.vacinas = "vacinas";
     }
 
-    public String getCpf() {
-        return cpf;
-    }
-    public void setCpf(String cpf) {
-        this.cpf = cpf;
-    }
 
-    public String getEndereco() {
-        return endereco;
-    }
-    public void setEndereco(String endereco) {
-        this.endereco = endereco;
-    }
 
     public String getVacinas() {
         return vacinas;
     }
     public void setVacinas(String vacinas) {
         this.vacinas = vacinas;
+    }
+
+    public String getProxDose() {
+        return proxDose;
+    }
+
+    public void setProxDose(String proxDose) {
+        this.proxDose = proxDose;
     }
 }
