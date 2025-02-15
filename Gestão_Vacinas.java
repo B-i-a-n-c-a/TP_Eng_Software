@@ -16,7 +16,7 @@ public class Gestão_Vacinas {
 
         System.out.print("Idade: ");
         u1.setIdade(sc.nextInt());
-        sc.nextLine(); // Consumir a quebra de linha pendente
+        sc.nextLine();
 
         System.out.print("CPF: ");
         u1.setCpf(sc.nextLine());
