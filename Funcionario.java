@@ -2,16 +2,7 @@ public class Funcionario extends Pessoa{
     private String crm_coren;
     private String hospitalClinica;
 
-    public Funcionario (String nome, String cpf,String endereco, int idade, String email, String crm_coren, String hospitalClinica){
-        this.nome = nome;
-        this.cpf = cpf;
-        this.endereco = endereco;
-        this.idade = idade;
-        this.email = email;
-        this.crm_coren = crm_coren;
-        this.hospitalClinica = hospitalClinica;
-    }
-
+    //Construtores vazios e populados
     public Funcionario (){
         this.nome = "example";
         this.cpf = "111.111.111-11";
@@ -20,6 +11,15 @@ public class Funcionario extends Pessoa{
         this.email = "email@email.com";
         this.crm_coren = "crm_coren";
         this.hospitalClinica = "hospitalClinica";
+    }
+    public Funcionario (String nome, String cpf,String endereco, int idade, String email, String crm_coren, String hospitalClinica){
+        this.nome = nome;
+        this.cpf = cpf;
+        this.endereco = endereco;
+        this.idade = idade;
+        this.email = email;
+        this.crm_coren = crm_coren;
+        this.hospitalClinica = hospitalClinica;
     }
 
     public String getCrm_coren() {
@@ -32,7 +32,6 @@ public class Funcionario extends Pessoa{
     public String getHospitalClinica() {
         return hospitalClinica;
     }
-
     public void setHospitalClinica(String hospitalClinica) {
         this.hospitalClinica = hospitalClinica;
     }

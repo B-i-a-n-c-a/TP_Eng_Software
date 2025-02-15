@@ -1,7 +1,8 @@
 public class usuario extends Pessoa{
     private String vacinas;
     private String proxDose;
-    
+
+    //Construtores vazios e populados
     public usuario (String nome, String cpf, String endereco, int idade, String email, String vacinas, String proxDose) {
         this.nome = nome;
         this.cpf = cpf;
@@ -32,7 +33,6 @@ public class usuario extends Pessoa{
     public String getProxDose() {
         return proxDose;
     }
-
     public void setProxDose(String proxDose) {
         this.proxDose = proxDose;
     }

@@ -33,4 +33,7 @@ public class Gestão_Vacinas {
         System.out.println(v1.getNome());
         System.out.println(v1.getFrequencia());
     }
+    public static void test(){
+        System.out.println("Isto é um teste");
+    }
 }
