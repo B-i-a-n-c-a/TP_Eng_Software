@@ -7,7 +7,7 @@ public class usuario extends Pessoa{
         this.cpf = cpf;
         this.endereco = endereco;
         this.email = email;
-        super.idade = idade;
+        this.idade = idade;
         this.vacinas = vacinas;
     }
 
