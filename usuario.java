@@ -2,12 +2,12 @@ public class usuario extends Pessoa{
     private String vacinas;
     private String proxDose;
     
-    public usuario (String nome, String cpf, String endereco, String email, String vacinas, String proxDose) {
+    public usuario (String nome, String cpf, String endereco, int idade, String email, String vacinas, String proxDose) {
         this.nome = nome;
         this.cpf = cpf;
         this.endereco = endereco;
         this.email = email;
-        this.idade = idade;
+        super.idade = idade;
         this.vacinas = vacinas;
     }
 

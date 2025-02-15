@@ -1,5 +1,3 @@
-import javax.lang.model.type.NullType;
-
 public class Funcionario extends Pessoa{
     private String crm_coren;
     private String hospitalClinica;
@@ -27,7 +25,7 @@ public class Funcionario extends Pessoa{
     public String getCrm_coren() {
         return crm_coren;
     }
-    public void setCrm_coren(String vacinas) {
+    public void setCrm_coren(String crm_coren) {
         this.crm_coren = crm_coren;
     }
 
