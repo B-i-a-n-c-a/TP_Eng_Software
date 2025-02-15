@@ -9,17 +9,24 @@ public class Gestão_Vacinas {
         usuario u1 = new usuario();
         vacinas v1 = new vacinas("Gripe", "1 vez ao ano");
         
-        System.out.println("Insira as informações do usuário: ");
-        
-        u1.setNome("Nome: " + sc.nextLine());
+        System.out.println("Cadastro de usuário: ");
+
+        System.out.print("Nome: ");
+        u1.setNome(sc.nextLine());
 
         System.out.print("Idade: ");
         u1.setIdade(sc.nextInt());
         sc.nextLine();
 
-        u1.setCpf("CPF: " + sc.nextLine());
-        u1.setEndereco("Endereco: " + sc.nextLine());
-        u1.setVacinas("Vacinas: " + sc.nextLine());
+        System.out.print("CPF: ");
+        u1.setCpf(sc.nextLine());
+
+        System.out.print("Endereço: ");
+        u1.setEndereco(sc.nextLine());
+
+        System.out.print("Vacinas: ");
+        u1.setVacinas(sc.nextLine());
+
         
         System.out.println();
         System.out.println("Usuário:");
