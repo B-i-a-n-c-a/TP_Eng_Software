@@ -1,0 +1,42 @@
+<mxfile host="app.diagrams.net" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36 OPR/116.0.0.0 (Edition std-2)" version="26.0.14">
+  <diagram name="Página-1" id="DPgGOrRigE_r_vZPe1qE">
+    <mxGraphModel dx="578" dy="336" grid="0" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="52OOqzTCsj2IzXVD1Yqi-6" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="52OOqzTCsj2IzXVD1Yqi-1" target="52OOqzTCsj2IzXVD1Yqi-5">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="52OOqzTCsj2IzXVD1Yqi-1" value="" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;fillColor=light-dark(#080707, #ededed);" vertex="1" parent="1">
+          <mxGeometry x="348" y="98" width="37" height="37" as="geometry" />
+        </mxCell>
+        <mxCell id="52OOqzTCsj2IzXVD1Yqi-3" value="&lt;b&gt;&lt;font style=&quot;font-size: 16px;&quot;&gt;Caso de uso: Catalogação de vacinas&lt;/font&gt;&lt;/b&gt;" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="78" y="19" width="324" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="52OOqzTCsj2IzXVD1Yqi-8" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;" edge="1" parent="1" source="52OOqzTCsj2IzXVD1Yqi-5">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="367" y="298" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="52OOqzTCsj2IzXVD1Yqi-5" value="" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="301" y="186" width="132" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="52OOqzTCsj2IzXVD1Yqi-7" value="O profissional acessa o módulo de catalogação de vacinas&amp;nbsp;" style="text;html=1;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="303" y="190.5" width="128" height="51" as="geometry" />
+        </mxCell>
+        <mxCell id="52OOqzTCsj2IzXVD1Yqi-9" value="" style="whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="294" y="299" width="145" height="58" as="geometry" />
+        </mxCell>
+        <mxCell id="52OOqzTCsj2IzXVD1Yqi-12" value="Insere as informações da vacina" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="315.5" y="313" width="102" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="52OOqzTCsj2IzXVD1Yqi-13" value="" style="strokeWidth=2;html=1;shape=mxgraph.flowchart.decision;whiteSpace=wrap;" vertex="1" parent="1">
+          <mxGeometry x="355.25" y="425" width="23.5" height="22" as="geometry" />
+        </mxCell>
+        <mxCell id="52OOqzTCsj2IzXVD1Yqi-16" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;entryPerimeter=0;" edge="1" parent="1" source="52OOqzTCsj2IzXVD1Yqi-9" target="52OOqzTCsj2IzXVD1Yqi-13">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
