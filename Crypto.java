@@ -4,8 +4,12 @@ import java.security.SecureRandom;
 import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.PBEKeySpec;
 import java.util.Base64;
+//Crypto é usada apenas para encriptação e gerenciamento de acesso e não deve ser instanciada
+public final class Crypto {
 
-public class Crypto {
+    private Crypto() {
+        throw new UnsupportedOperationException("Esta classe não pode ser instanciada.");
+    }
 
     // PBKDF2 function that takes a password and salt, and returns the salted hash
     public static String pbkdf2Hash(String password, String salt) {
