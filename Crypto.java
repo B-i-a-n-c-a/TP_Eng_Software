@@ -36,7 +36,7 @@ public class Crypto {
     }
 
     // Example of how to use this function
-    public static void main(String[] args) {
+    public static void testHash() {
         // Sample password and salt
         String password = "mySecretPassword";
         String salt = "mySaltValue";
