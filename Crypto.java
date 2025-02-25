@@ -39,6 +39,21 @@ public final class Crypto {
         }
     }
 
+    public static String generateSalt(int length) {
+        // Use SecureRandom for cryptographic-quality randomness
+        SecureRandom random = new SecureRandom();
+
+        // Create a byte array to hold the salt
+        byte[] salt = new byte[length];
+
+        // Fill the byte array with random bytes
+        random.nextBytes(salt);
+
+        // Encode the byte array to a Base64 string for easy storage and use
+        return Base64.getEncoder().encodeToString(salt);
+    }
+
+
     // Example of how to use this function
     public static void testHash() {
         // Sample password and salt

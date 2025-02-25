@@ -1,7 +1,13 @@
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.io.*;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import java.util.*;
 
 //Esta classe inicia a interface de usuário e interage com os demais recursos da aplicação
@@ -41,6 +47,10 @@ public class GUI extends JFrame {
     private JPasswordField newDBpassword;
     private JTextField newDBaddress;
     private JButton confirmaMudançasButton;
+    private JButton confirmaCadastroUserButton;
+    private JTextField CadastraUserNome;
+    private JButton cadastraToAdminButton;
+    private JPasswordField CadastraUserSenha;
     private String password;
     private String username;
     private String adminSalt = "adminpbkdf2";
@@ -48,9 +58,13 @@ public class GUI extends JFrame {
     private String userDB;
     private String passwordDB;
     private String addressDB;
+    private String cadastraUserNome1;
+    private String cadastraUserSenha1;
+    Connection connection;
 
     public GUI() {
         retrieveDatabaseConfig();
+        makeConnection(addressDB, userDB, passwordDB);
         setContentPane(background);
         setTitle("Sistema vacinação");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -59,6 +73,13 @@ public class GUI extends JFrame {
         setVisible(true);
         AddressBD.setText("Endereço: " + addressDB);
         JLabelUserBD.setText("Usuário: " + userDB);
+
+        addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                closeConnection(); // Fecha conexão quando a janela da aplicação encerra
+            }
+        });
 
         loginButton.addActionListener(new ActionListener() {
             @Override
@@ -124,8 +145,32 @@ public class GUI extends JFrame {
                 storeDatabaseConfig(addressDB, userDB, passwordDB);
             }
         });
+        cadastraUserButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                admin_Jpanel.setVisible(false);
+                cadastra_user.setVisible(true);
+            }
+        });
+        cadastraToAdminButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                cadastra_user.setVisible(false);
+                adminConfig.setVisible(true);
+            }
+        });
+        confirmaCadastroUserButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                setCadastraUserNome();
+                setCadastraUserSenha();
+                String salt = Crypto.generateSalt(16);
+                String hash = Crypto.pbkdf2Hash(getCadastraUserSenha(), salt);
+                registerUser(getCadastraUsernome(), hash, salt);
+                //isto apenas registra o usuário. Necessário fazer buscador de login no sistema com conexão ao bd
+            }
+        });
     }
-
     public String auth() {
         if(this.username.equals("admin") && this.adminHash.equals(Crypto.pbkdf2Hash(this.password, this.adminSalt))) {
             return "admin";
@@ -137,15 +182,16 @@ public class GUI extends JFrame {
     }
 
 
-    public void setPassword() {
-        this.password = new String(passwordField1.getPassword());
-    }
-    public void setUsername() {
-        this.username = new String(textField1.getText());
-    }
+    public void setPassword() {this.password = new String(passwordField1.getPassword());}
+    public void setUsername() {this.username = new String(textField1.getText());}
     public void setUserDB(){this.userDB = new String(newDBuserTextField.getText());}
     public void setPasswordDB(){this.passwordDB = new String(newDBpassword.getPassword());}
     public void setPathDB(){this.addressDB = new String(newDBaddress.getText());}
+    public void setCadastraUserNome(){this.cadastraUserNome1 = new String(CadastraUserNome.getText());}
+    public void setCadastraUserSenha(){this.cadastraUserSenha1 = new String(CadastraUserSenha.getPassword());}
+    public String getCadastraUserSenha(){return this.cadastraUserSenha1;}
+    public String getCadastraUsernome(){return this.cadastraUserNome1;}
+
 
     public void storeDatabaseConfig(String address, String user, String password) {
         Map<String, String> config = new HashMap<>();
@@ -199,6 +245,38 @@ public class GUI extends JFrame {
         }
 
     }
+
+
+        public void makeConnection(String jdbcurl, String username, String password){
+            try{
+                this.connection = DriverManager.getConnection(jdbcurl, username, password);
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+        public void closeConnection(){
+            try{
+                this.connection.close();
+
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+
+        public void registerUser(String username, String hashpassword, String salt){
+            try{
+                PreparedStatement insertState = connection.prepareStatement("INSERT INTO users(username, password, salt) VALUES (?,?,?)");
+                insertState.setString(1, username);
+                insertState.setString(2, hashpassword);
+                insertState.setString(3, salt);
+                insertState.execute();
+                System.out.println("Usuário registrado");
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+
+
 
     public static void main(String[] args) {
         new GUI();
