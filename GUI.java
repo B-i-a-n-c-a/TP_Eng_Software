@@ -4,10 +4,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.*;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.*;
 
 //Esta classe inicia a interface de usuário e interage com os demais recursos da aplicação
@@ -51,6 +48,7 @@ public class GUI extends JFrame {
     private JTextField CadastraUserNome;
     private JButton cadastraToAdminButton;
     private JPasswordField CadastraUserSenha;
+    private JButton testarConexãoButton;
     private String password;
     private String username;
     private String adminSalt = "adminpbkdf2";
@@ -60,11 +58,17 @@ public class GUI extends JFrame {
     private String addressDB;
     private String cadastraUserNome1;
     private String cadastraUserSenha1;
+    private String query;
     Connection connection;
 
     public GUI() {
         retrieveDatabaseConfig();
-        makeConnection(addressDB, userDB, passwordDB);
+        try {
+            makeConnection(addressDB, userDB, passwordDB);
+        } catch (SQLException g) {
+            JOptionPane.showMessageDialog(null, "Database connection failed: " + g.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+            g.printStackTrace();
+        }
         setContentPane(background);
         setTitle("Sistema vacinação");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -91,8 +95,43 @@ public class GUI extends JFrame {
                     admin_Jpanel.setVisible(true);
                 }
                 if(auth().equals("user")){
-                    landing_Jpanel.setVisible(false);
-                    user_Jpanel.setVisible(true);
+                    try {
+                        String query = "SELECT password, salt FROM users WHERE username = ?";
+                        PreparedStatement s = connection.prepareStatement(query);
+                        s.setString(1, username);
+                        ResultSet rs = s.executeQuery();
+
+                        if (rs.next()) { // Check if a row was returned
+                            String passwordHashFromDB = rs.getString("password"); // Use column names
+                            System.out.println(passwordHashFromDB);
+                            String salt = rs.getString("salt");
+
+                            if (salt != null) { // Handle the case where the salt is null
+                                String enteredPasswordHash = Crypto.pbkdf2Hash(password, salt); // Hash the entered password with the retrieved salt.
+                                if (enteredPasswordHash.equals(passwordHashFromDB)) {
+                                    landing_Jpanel.setVisible(false);
+                                    user_Jpanel.setVisible(true);
+                                } else {
+                                    // Incorrect password - provide feedback to the user
+                                    JOptionPane.showMessageDialog(null, "Incorrect password.", "Error", JOptionPane.ERROR_MESSAGE);
+                                }
+                            } else {
+                                // Handle the case where the user doesn't have a salt in the database.
+                                JOptionPane.showMessageDialog(null, "User record is missing salt.", "Error", JOptionPane.ERROR_MESSAGE);
+                            }
+
+                        } else {
+                            // User not found - provide feedback to the user
+                            JOptionPane.showMessageDialog(null, "User not found.", "Error", JOptionPane.ERROR_MESSAGE);
+                        }
+
+                        rs.close(); // Close the ResultSet
+                        s.close(); // Close the PreparedStatement
+
+                    } catch (SQLException f) {
+                        f.printStackTrace();
+                        JOptionPane.showMessageDialog(null, "Database error: " + f.getMessage(), "Error", JOptionPane.ERROR_MESSAGE); // Inform user of database error
+                    }
                     Gestão_Vacinas.test();
                 }
             }
@@ -156,7 +195,7 @@ public class GUI extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 cadastra_user.setVisible(false);
-                adminConfig.setVisible(true);
+                admin_Jpanel.setVisible(true);
             }
         });
         confirmaCadastroUserButton.addActionListener(new ActionListener() {
@@ -170,14 +209,24 @@ public class GUI extends JFrame {
                 //isto apenas registra o usuário. Necessário fazer buscador de login no sistema com conexão ao bd
             }
         });
+        testarConexãoButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                try {
+                    makeConnection(addressDB, userDB, passwordDB);
+                    JOptionPane.showMessageDialog(null, "Database connection succeeded","Success", JOptionPane.PLAIN_MESSAGE);
+                } catch (SQLException g) {
+                    JOptionPane.showMessageDialog(null, "Database connection failed: " + g.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+                    g.printStackTrace();
+                }
+            }
+        });
     }
     public String auth() {
         if(this.username.equals("admin") && this.adminHash.equals(Crypto.pbkdf2Hash(this.password, this.adminSalt))) {
             return "admin";
-        }else if(this.username.equals("guest") && this.password.equals("guest")){
-            return "user";
         }else{
-            return "null";
+            return "user";
         }
     }
 
@@ -247,13 +296,10 @@ public class GUI extends JFrame {
     }
 
 
-        public void makeConnection(String jdbcurl, String username, String password){
-            try{
+        public void makeConnection(String jdbcurl, String username, String password) throws SQLException{
                 this.connection = DriverManager.getConnection(jdbcurl, username, password);
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
         }
+
         public void closeConnection(){
             try{
                 this.connection.close();
