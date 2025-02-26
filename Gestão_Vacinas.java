@@ -1,46 +1,34 @@
-import java.util.Scanner;
+import javax.swing.*;
+import java.security.SecureRandom;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 
 public class Gestão_Vacinas {
+    SecureRandom random = new SecureRandom();
+    public int id_vacina;
+    public String nome_vacina;
+    public String tipo_vacina;
+    public String fabricante;
 
-    public static void main(String[] args) {
-        System.out.println(Crypto.pbkdf2Hash("admin6767","admindbpbkdf2"));
-
-        Scanner sc = new Scanner(System.in);
-
-        usuario u1 = new usuario();
-        vacinas v1 = new vacinas("Gripe", "1 vez ao ano");
-
-        System.out.println("Cadastro de usuário: ");
-
-        System.out.print("Nome: ");
-        u1.setNome(sc.nextLine());
-
-        System.out.print("Idade: ");
-        u1.setIdade(sc.nextInt());
-        sc.nextLine();
-
-        System.out.print("CPF: ");
-        u1.setCpf(sc.nextLine());
-
-        System.out.print("Endereço: ");
-        u1.setEndereco(sc.nextLine());
-
-        System.out.print("Vacinas: ");
-        u1.setVacinas(sc.nextLine());
-
-
-        System.out.println();
-        System.out.println("Usuário:");
-        System.out.println(u1.getNome());
-        System.out.println(u1.getIdade());
-        System.out.println(u1.getCpf());
-        System.out.println(u1.getEndereco());
-        System.out.println(u1.getVacinas());
-        System.out.println();
-        System.out.println("Vacinas:");
-        System.out.println(v1.getNome());
-        System.out.println(v1.getFrequencia());
+    public Gestão_Vacinas(){
+        this.id_vacina = random.nextInt(9999);
+        this.nome_vacina = "exemplo";
+        this.tipo_vacina = "EXEMPLO";
+        this.fabricante = "exemplo";
     }
+
+    public static void registraVacina(Gestão_Vacinas vacina, Connection connection) throws SQLException {
+        PreparedStatement insertState = connection.prepareStatement("INSERT INTO vacina_padronizada(id_vacina, nome_vacina, tipo_vacina, fabricante) VALUES (?,?,?,?)");
+        insertState.setInt(1, vacina.id_vacina);
+        insertState.setString(2, vacina.nome_vacina);
+        insertState.setString(3, vacina.tipo_vacina);
+        insertState.setString(4,vacina.fabricante);
+        insertState.execute();
+        System.out.println("Vacina registrada");
+        JOptionPane.showMessageDialog(null, vacina.nome_vacina + " registrada com sucesso");
+    }
+
     public static void test(){
         System.out.println("Isto é um teste");
     }

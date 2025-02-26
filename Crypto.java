@@ -45,7 +45,6 @@ public final class Crypto {
 
         // Create a byte array to hold the salt
         byte[] salt = new byte[length];
-
         // Fill the byte array with random bytes
         random.nextBytes(salt);
 

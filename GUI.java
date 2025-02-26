@@ -20,15 +20,11 @@ public class GUI extends JFrame {
     private JPanel user_Jpanel;
     private JPanel consulta_user;
     private JPanel cadastra_user;
-    private JPanel consulta_vacina;
-    private JPanel insere_vacina;
+    private JPanel insere_vacina_user;
     private JButton consultaUserButton;
     private JButton cadastraVacinaButton;
     private JButton cadastraUserButton;
     private JButton consultaVacinaButton;
-    private JButton históricoDeVacinasButton;
-    private JButton próximasDosesButton;
-    private JButton imprimirCartãoButton;
     private JButton consultaCartãoUsuárioButton;
     private JButton consultarEAlterarDadosButton;
     private JButton AdminConfigButton;
@@ -49,6 +45,18 @@ public class GUI extends JFrame {
     private JButton cadastraToAdminButton;
     private JPasswordField CadastraUserSenha;
     private JButton testarConexãoButton;
+    private JButton cadastraPacienteButton;
+    private JButton alterarMeusDadosButton;
+    private JButton configuraçõesButton;
+    private JButton sairAdminConfigButton;
+    private JTextField idvacinaUSER;
+    private JTextField nomevacinaUSER;
+    private JTextField tipovacinaUSER;
+    private JTextField fabricantevacinaUSER;
+    private JButton ConfirmaVacinaUser;
+    private JButton voltarVacinaToConfigUser;
+    private JButton criarVacinaUserButton;
+    private JButton criarLoteUserButton;
     private String password;
     private String username;
     private String adminSalt = "adminpbkdf2";
@@ -59,6 +67,7 @@ public class GUI extends JFrame {
     private String cadastraUserNome1;
     private String cadastraUserSenha1;
     private String query;
+    Gestão_Vacinas vacina = new Gestão_Vacinas();
     Connection connection;
 
     public GUI() {
@@ -90,6 +99,8 @@ public class GUI extends JFrame {
             public void actionPerformed(ActionEvent e) {
                 setPassword();
                 setUsername();
+                textField1.setText("");
+                passwordField1.setText("");
                 if(auth().equals("admin")){
                     landing_Jpanel.setVisible(false);
                     admin_Jpanel.setVisible(true);
@@ -103,7 +114,7 @@ public class GUI extends JFrame {
 
                         if (rs.next()) { // Check if a row was returned
                             String passwordHashFromDB = rs.getString("password"); // Use column names
-                            System.out.println(passwordHashFromDB);
+                            //System.out.println(passwordHashFromDB);
                             String salt = rs.getString("salt");
 
                             if (salt != null) { // Handle the case where the salt is null
@@ -132,7 +143,7 @@ public class GUI extends JFrame {
                         f.printStackTrace();
                         JOptionPane.showMessageDialog(null, "Database error: " + f.getMessage(), "Error", JOptionPane.ERROR_MESSAGE); // Inform user of database error
                     }
-                    Gestão_Vacinas.test();
+                    //Gestão_Vacinas.test();
                 }
             }
         });
@@ -177,7 +188,7 @@ public class GUI extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 adminConfigChangeDB.setVisible(false);
-                adminConfig.setVisible(true);
+                landing_Jpanel.setVisible(true);
                 setUserDB();
                 setPasswordDB();
                 setPathDB();
@@ -221,6 +232,45 @@ public class GUI extends JFrame {
                 }
             }
         });
+        configuraçõesButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                user_Jpanel.setVisible(false);
+                adminConfigChangeDB.setVisible(true);
+            }
+        });
+        sairAdminConfigButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                adminConfigChangeDB.setVisible(false);
+                landing_Jpanel.setVisible(true);
+            }
+        });
+        criarVacinaUserButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                user_Jpanel.setVisible(false);
+                insere_vacina_user.setVisible(true);
+            }
+        });
+        ConfirmaVacinaUser.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                setVacinaUser();
+                try{
+                    Gestão_Vacinas.registraVacina(vacina,connection);
+                    insere_vacina_user.setVisible(false);
+                    user_Jpanel.setVisible(true);
+                    setVacinaUser();
+                } catch (SQLException ex) {
+                    JOptionPane.showMessageDialog(null, "Erro ao registrar vacina: " + ex.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE); // Feedback visual com mensagem de erro
+                    ex.printStackTrace(); // Imprime o stack trace para debugging
+                } catch (Exception ex) { // Captura outras exceções inesperadas
+                    JOptionPane.showMessageDialog(null, "Ocorreu um erro inesperado: " + ex.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
+                    ex.printStackTrace();
+                }
+            }
+        });
     }
     public String auth() {
         if(this.username.equals("admin") && this.adminHash.equals(Crypto.pbkdf2Hash(this.password, this.adminSalt))) {
@@ -240,6 +290,12 @@ public class GUI extends JFrame {
     public void setCadastraUserSenha(){this.cadastraUserSenha1 = new String(CadastraUserSenha.getPassword());}
     public String getCadastraUserSenha(){return this.cadastraUserSenha1;}
     public String getCadastraUsernome(){return this.cadastraUserNome1;}
+    public void setVacinaUser(){
+        this.vacina.id_vacina = Integer.parseInt(new String(idvacinaUSER.getText()));
+        this.vacina.nome_vacina = new String(nomevacinaUSER.getText());
+        this.vacina.tipo_vacina = new String(tipovacinaUSER.getText());
+        this.vacina.fabricante = new String(fabricantevacinaUSER.getText());
+    }
 
 
     public void storeDatabaseConfig(String address, String user, String password) {
