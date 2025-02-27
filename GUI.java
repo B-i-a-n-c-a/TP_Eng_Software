@@ -271,6 +271,13 @@ public class GUI extends JFrame {
                 }
             }
         });
+        voltarVacinaToConfigUser.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                insere_vacina_user.setVisible(false);
+                user_Jpanel.setVisible(true);
+            }
+        });
     }
     public String auth() {
         if(this.username.equals("admin") && this.adminHash.equals(Crypto.pbkdf2Hash(this.password, this.adminSalt))) {
