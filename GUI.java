@@ -1,11 +1,16 @@
 import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.*;
 import java.sql.*;
+import java.sql.Date;
+import java.time.format.DateTimeParseException;
 import java.util.*;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 
 //Esta classe inicia a interface de usuário e interage com os demais recursos da aplicação
 
@@ -22,17 +27,10 @@ public class GUI extends JFrame {
     private JPanel cadastra_user;
     private JPanel insere_vacina_user;
     private JButton consultaUserButton;
-    private JButton cadastraVacinaButton;
     private JButton cadastraUserButton;
-    private JButton consultaVacinaButton;
-    private JButton consultaCartãoUsuárioButton;
     private JButton consultarEAlterarDadosButton;
-    private JButton AdminConfigButton;
-    private JPanel adminConfig;
     private JLabel JLabelUserBD;
     private JLabel AddressBD;
-    private JButton voltarConfToAdmin;
-    private JButton alterarDadosBDButton;
     private JButton adminlogoutButton;
     private JButton userLogoutButton;
     private JPanel adminConfigChangeDB;
@@ -57,6 +55,37 @@ public class GUI extends JFrame {
     private JButton voltarVacinaToConfigUser;
     private JButton criarVacinaUserButton;
     private JButton criarLoteUserButton;
+    private JButton buscarVacinaButton;
+    private JButton buscarLoteButton;
+    private JPanel criarLoteUser;
+    private JTextField batchIDfield;
+    private JTextField vaxIDfield;
+    private JTextField batchFabField;
+    private JTextField batchExpiration;
+    private JTextField batchQuantity;
+    private JButton realizarAplicaçãoButton;
+    private JButton buscaPacienteButton;
+    private JLabel usernameLabel1;
+    private JButton consultaCartãoPacienteButton;
+    private JButton testarConexãoAdminConfigButton;
+    private JLabel adminDBconfigLabel1;
+    private JButton adminToUserJbutton;
+    private JButton batchConfirmaButton;
+    private JButton batchToUserButton;
+    private JLabel batchLabel1;
+    private JButton fecharButton;
+    private JPanel buscarVacinaUser;
+    private JButton voltarVacinaToUserButton;
+    private JLabel vaxSearchID;
+    private JLabel vaxSearchName;
+    private JLabel vaxSearchType;
+    private JLabel vaxSearchFab;
+    private JLabel vaxSearchbatch;
+    private JLabel vaxBatchAmount;
+    private JTextField searchVaxField1;
+    private JTextField searchPatienteField1;
+    private JTextField searchBatchField1;
+    private JLabel vaxSearchExpire;
     private String password;
     private String username;
     private String adminSalt = "adminpbkdf2";
@@ -69,6 +98,7 @@ public class GUI extends JFrame {
     private String query;
     Gestão_Vacinas vacina = new Gestão_Vacinas();
     Connection connection;
+    Lote lote1 = new Lote();
 
     public GUI() {
         retrieveDatabaseConfig();
@@ -84,8 +114,20 @@ public class GUI extends JFrame {
         setSize(600, 400);
         setLocationRelativeTo(null);
         setVisible(true);
-        AddressBD.setText("Endereço: " + addressDB);
-        JLabelUserBD.setText("Usuário: " + userDB);
+        AddressBD.setText(addressDB);
+        JLabelUserBD.setText(userDB);
+        AddressBD.setForeground(new Color(100, 180, 120));
+        JLabelUserBD.setForeground(new Color(100, 180, 120));
+        consultarEAlterarDadosButton.setBackground(new Color(100, 150, 200));
+        cadastraPacienteButton.setBackground(new Color(100, 150, 200));
+        criarVacinaUserButton.setBackground(new Color(100, 150, 200));
+        criarLoteUserButton.setBackground(new Color(100, 150, 200));
+        realizarAplicaçãoButton.setBackground(new Color(100, 150, 200));
+        alterarMeusDadosButton.setBackground(new Color(100, 180, 120));
+        buscaPacienteButton.setBackground(new Color(100, 180, 120));
+        buscarVacinaButton.setBackground(new Color(100, 180, 120));
+        buscarLoteButton.setBackground(new Color(100, 180, 120));
+        consultaCartãoPacienteButton.setBackground(new Color(100, 180, 120));
 
         addWindowListener(new WindowAdapter() {
             @Override
@@ -122,6 +164,7 @@ public class GUI extends JFrame {
                                 if (enteredPasswordHash.equals(passwordHashFromDB)) {
                                     landing_Jpanel.setVisible(false);
                                     user_Jpanel.setVisible(true);
+                                    usernameLabel1.setText("Olá "+username);
                                 } else {
                                     // Incorrect password - provide feedback to the user
                                     JOptionPane.showMessageDialog(null, "Incorrect password.", "Error", JOptionPane.ERROR_MESSAGE);
@@ -148,21 +191,15 @@ public class GUI extends JFrame {
             }
         });
 
+        fecharButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                System.out.println("Exiting the application...");
+                System.out.flush();
+                System.exit(0);
+            }
+        });
 
-        AdminConfigButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                admin_Jpanel.setVisible(false);
-                adminConfig.setVisible(true);
-            }
-        });
-        voltarConfToAdmin.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                adminConfig.setVisible(false);
-                admin_Jpanel.setVisible(true);
-            }
-        });
         adminlogoutButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -177,22 +214,22 @@ public class GUI extends JFrame {
                 landing_Jpanel.setVisible(true);
             }
         });
-        alterarDadosBDButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                adminConfig.setVisible(false);
-                adminConfigChangeDB.setVisible(true);
-            }
-        });
         confirmaMudançasButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                adminConfigChangeDB.setVisible(false);
-                landing_Jpanel.setVisible(true);
-                setUserDB();
-                setPasswordDB();
-                setPathDB();
-                storeDatabaseConfig(addressDB, userDB, passwordDB);
+                if(newDBuserTextField.getText().isBlank() || newDBpassword.getText().isBlank() || newDBaddress.getText().isBlank()){
+                    adminDBconfigLabel1.setText("Todos os campos devem ser preenchidos");
+                    adminDBconfigLabel1.setForeground(Color.RED);
+                }else{
+                    adminDBconfigLabel1.setText("Insira abaixo novas configurações do Banco de dados:");
+                    adminDBconfigLabel1.setForeground(Color.BLACK);
+                    adminConfigChangeDB.setVisible(false);
+                    landing_Jpanel.setVisible(true);
+                    setUserDB();
+                    setPasswordDB();
+                    setPathDB();
+                    storeDatabaseConfig(addressDB, userDB, passwordDB);
+                }
             }
         });
         cadastraUserButton.addActionListener(new ActionListener() {
@@ -220,18 +257,6 @@ public class GUI extends JFrame {
                 //isto apenas registra o usuário. Necessário fazer buscador de login no sistema com conexão ao bd
             }
         });
-        testarConexãoButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                try {
-                    makeConnection(addressDB, userDB, passwordDB);
-                    JOptionPane.showMessageDialog(null, "Database connection succeeded","Success", JOptionPane.PLAIN_MESSAGE);
-                } catch (SQLException g) {
-                    JOptionPane.showMessageDialog(null, "Database connection failed: " + g.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
-                    g.printStackTrace();
-                }
-            }
-        });
         configuraçõesButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -243,7 +268,7 @@ public class GUI extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 adminConfigChangeDB.setVisible(false);
-                landing_Jpanel.setVisible(true);
+                user_Jpanel.setVisible(true);
             }
         });
         criarVacinaUserButton.addActionListener(new ActionListener() {
@@ -278,6 +303,125 @@ public class GUI extends JFrame {
                 user_Jpanel.setVisible(true);
             }
         });
+        testarConexãoAdminConfigButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                try {
+                    makeConnection(addressDB, userDB, passwordDB);
+                    JOptionPane.showMessageDialog(null, "Database connection succeeded","Success", JOptionPane.PLAIN_MESSAGE);
+                } catch (SQLException g) {
+                    JOptionPane.showMessageDialog(null, "Database connection failed: " + g.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+                    g.printStackTrace();
+                }
+            }
+        });
+        adminToUserJbutton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                admin_Jpanel.setVisible(false);
+                user_Jpanel.setVisible(true);
+                usernameLabel1.setText("Olá admin");
+            }
+        });
+        criarLoteUserButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                criarLoteUser.setVisible(true);
+                user_Jpanel.setVisible(false);
+                batchLabel1.setVisible(false);
+            }
+        });
+        batchToUserButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                user_Jpanel.setVisible(true);
+                criarLoteUser.setVisible(false);
+                batchLabel1.setVisible(false);
+            }
+        });
+
+        //Lembrete: Ainda não adicionado verificação do id da vacina
+        batchConfirmaButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if(batchIDfield.getText().isBlank() || vaxIDfield.getText().isBlank() || batchExpiration.getText().isBlank() || batchFabField.getText().isBlank()){
+                    batchLabel1.setVisible(true);
+                    batchLabel1.setForeground(Color.RED);
+                    batchLabel1.setText("Todos os campos devem ser preenchidos");
+                }else if(Integer.parseInt(batchQuantity.getText()) == 0){
+                    batchLabel1.setVisible(true);
+                    batchLabel1.setForeground(Color.RED);
+                    batchLabel1.setText("A quantidade do lote não pode ser 0");
+                }else{
+                    try{
+                        try {
+                            setBatch();
+                            registerLote(lote1);
+                            JOptionPane.showMessageDialog(null, "Configurações aplicadas com sucesso!", "Success", JOptionPane.INFORMATION_MESSAGE);
+                            user_Jpanel.setVisible(true);
+                            criarLoteUser.setVisible(false);
+                        } catch (SQLException j) {
+                            JOptionPane.showMessageDialog(null, "Erro ao registrar lote: " + j.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
+                            j.printStackTrace(); // Optional: Print stack trace for debugging
+                        } catch (NullPointerException k){
+                            JOptionPane.showMessageDialog(null, "Erro: Lote ou conexão nula. Verifique se os dados estão corretos.", "Erro", JOptionPane.ERROR_MESSAGE);
+                            k.printStackTrace();
+                        } catch(Exception l) {
+                            JOptionPane.showMessageDialog(null, "Ocorreu um erro inesperado: " + l.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
+                            l.printStackTrace();
+                        }
+                    } catch (NumberFormatException g) {
+                        JOptionPane.showMessageDialog(null, g.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+                        g.printStackTrace(); // Optional: Print stack trace for debugging
+                    } catch (IllegalArgumentException h) {
+                        JOptionPane.showMessageDialog(null, h.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+                        h.printStackTrace();
+                    } catch (DateTimeParseException i) {
+                        JOptionPane.showMessageDialog(null, i.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+                        i.printStackTrace();
+                    }
+                }
+
+
+            }
+        });
+
+        consultarEAlterarDadosButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+
+            }
+        });
+        buscarVacinaButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                try {
+                    if(searchVaxField1.getText().isBlank()){
+                        JOptionPane.showMessageDialog(null, "O campo ID está vazio", "Erro", JOptionPane.ERROR_MESSAGE);
+                    }else{
+                        searchVax();
+                        searchVaxField1.setText("");
+                        buscarVacinaUser.setVisible(true);
+                        user_Jpanel.setVisible(false);
+                    }
+                }catch (SQLException m) {
+                    JOptionPane.showMessageDialog(null, "Erro ao consultar o banco de dados: " + m.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
+                    searchVaxField1.setText("");
+                    m.printStackTrace();
+                }catch (Exception n){
+                    JOptionPane.showMessageDialog(null, n.toString(), "Erro", JOptionPane.ERROR_MESSAGE);
+                    searchVaxField1.setText("");
+                    n.printStackTrace();
+                }
+            }
+        });
+        voltarVacinaToUserButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                buscarVacinaUser.setVisible(false);
+                user_Jpanel.setVisible(true);
+            }
+        });
     }
     public String auth() {
         if(this.username.equals("admin") && this.adminHash.equals(Crypto.pbkdf2Hash(this.password, this.adminSalt))) {
@@ -302,6 +446,13 @@ public class GUI extends JFrame {
         this.vacina.nome_vacina = new String(nomevacinaUSER.getText());
         this.vacina.tipo_vacina = new String(tipovacinaUSER.getText());
         this.vacina.fabricante = new String(fabricantevacinaUSER.getText());
+    }
+    public void setBatch() throws IllegalArgumentException{
+        this.lote1.id_lote = Integer.parseInt(batchIDfield.getText());
+        this.lote1.id_vacina = Integer.parseInt(vaxIDfield.getText());
+        this.lote1.data_fab = batchFabField.getText();
+        this.lote1.data_val = batchExpiration.getText();
+        this.lote1.quantidade = Integer.parseInt(batchQuantity.getText());
     }
 
 
@@ -359,20 +510,20 @@ public class GUI extends JFrame {
     }
 
 
-        public void makeConnection(String jdbcurl, String username, String password) throws SQLException{
+    public void makeConnection(String jdbcurl, String username, String password) throws SQLException{
                 this.connection = DriverManager.getConnection(jdbcurl, username, password);
-        }
+    }
 
-        public void closeConnection(){
+    public void closeConnection(){
             try{
                 this.connection.close();
 
             } catch (SQLException e) {
                 e.printStackTrace();
             }
-        }
+    }
 
-        public void registerUser(String username, String hashpassword, String salt){
+    public void registerUser(String username, String hashpassword, String salt){
             try{
                 PreparedStatement insertState = connection.prepareStatement("INSERT INTO users(username, password, salt) VALUES (?,?,?)");
                 insertState.setString(1, username);
@@ -383,7 +534,82 @@ public class GUI extends JFrame {
             } catch (SQLException e) {
                 e.printStackTrace();
             }
+    }
+    public void searchVax() throws SQLException, Exception{
+        int id = Integer.parseInt(searchVaxField1.getText());
+        query = "SELECT vp.id_vacina, vp.nome_vacina, vp.tipo_vacina, vp.fabricante, l.id_lote, l.data_validade, l.quantidade FROM vacina_padronizada vp INNER JOIN lote l ON vp.id_vacina = l.id_vacina WHERE vp.id_vacina = ?;";
+        PreparedStatement ps = connection.prepareStatement(query);
+        ps.setInt(1, id);
+        ResultSet rs = ps.executeQuery();
+        if (!rs.isBeforeFirst()) {
+            throw new Exception("Vacina não encontrada com o ID: " + id);
+        }else {
+            while(rs.next()) {
+                vaxSearchID.setText(String.valueOf(rs.getInt("id_vacina")));
+                vaxSearchName.setText(rs.getString("nome_vacina"));
+                vaxSearchType.setText(rs.getString("tipo_vacina"));
+                vaxSearchFab.setText(rs.getString("fabricante"));
+                vaxSearchbatch.setText(String.valueOf(rs.getInt("id_lote")));
+                vaxSearchExpire.setText(String.valueOf(rs.getDate("data_validade")));
+                vaxBatchAmount.setText(String.valueOf(rs.getInt("quantidade")));
+            }
         }
+
+    }
+    public void registerLote(Lote lote) throws SQLException, NullPointerException, Exception{
+        try {
+            PreparedStatement insertState = connection.prepareStatement("INSERT INTO lote(id_lote, id_vacina, data_fabricacao, data_validade, quantidade) VALUES (?,?,?,?,?)");
+            insertState.setInt(1, lote.id_lote);
+            insertState.setInt(2, lote.id_vacina);
+            // Parse and format data_fab
+            insertState.setDate(3, parseAndFormatDate(lote.data_fab));
+            // Parse and format data_val
+            insertState.setDate(4, parseAndFormatDate(lote.data_val));
+            insertState.setInt(5, lote.quantidade);
+
+            insertState.executeUpdate();
+            JOptionPane.showMessageDialog(null, "Lote registrado com sucesso!", "Sucesso", JOptionPane.INFORMATION_MESSAGE);
+
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(null, "Erro ao registrar lote: " + e.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
+            e.printStackTrace();
+        } catch (DateTimeParseException e) {
+            JOptionPane.showMessageDialog(null, "Erro: formato de data inválido. Use DD/MM/AAAA ou DD-MM-AAAA.", "Erro", JOptionPane.ERROR_MESSAGE);
+            e.printStackTrace();
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, "Ocorreu um erro inesperado: " + e.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
+            e.printStackTrace();
+        }
+    }
+
+    private Date parseAndFormatDate(String dateString) throws DateTimeParseException {
+        if (dateString == null || dateString.isEmpty()) {
+            return null; // Handle null or empty date strings as needed
+        }
+
+        DateTimeFormatter[] formatters = {
+                DateTimeFormatter.ofPattern("dd/MM/yyyy"),
+                DateTimeFormatter.ofPattern("dd-MM-yyyy")
+        };
+
+        LocalDate localDate = null;
+        for (DateTimeFormatter formatter : formatters) {
+            try {
+                localDate = LocalDate.parse(dateString, formatter);
+                break; // Found a matching format
+            } catch (DateTimeParseException e) {
+                // Try the next formatter
+            }
+        }
+
+        if (localDate == null) {
+            throw new DateTimeParseException("Invalid date format", dateString, 0); //Throw exception if no format matches.
+        }
+
+        return Date.valueOf(localDate);
+    }
+
+
 
 
 

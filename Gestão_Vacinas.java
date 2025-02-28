@@ -17,6 +17,12 @@ public class Gestão_Vacinas {
         this.tipo_vacina = "EXEMPLO";
         this.fabricante = "exemplo";
     }
+    public Gestão_Vacinas(int id, String nome, String tipo, String fabricante){
+        this.id_vacina = id;
+        this.nome_vacina = nome;
+        this.tipo_vacina = tipo;
+        this.fabricante = fabricante;
+    }
 
     public static void registraVacina(Gestão_Vacinas vacina, Connection connection) throws SQLException {
         PreparedStatement insertState = connection.prepareStatement("INSERT INTO vacina_padronizada(id_vacina, nome_vacina, tipo_vacina, fabricante) VALUES (?,?,?,?)");
