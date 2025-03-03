@@ -132,18 +132,21 @@ public class GUI extends JFrame {
         setSize(600, 400);
         setLocationRelativeTo(null);
         setVisible(true);
-        AddressBD.setText(addressDB);
-        JLabelUserBD.setText(userDB);
-        AddressBD.setForeground(new Color(100, 180, 120));
-        JLabelUserBD.setForeground(new Color(100, 180, 120));
-        cadastraPacienteButton.setBackground(new Color(100, 150, 200));
-        criarVacinaUserButton.setBackground(new Color(100, 150, 200));
-        criarLoteUserButton.setBackground(new Color(100, 150, 200));
-        realizarAplicaçãoButton.setBackground(new Color(100, 150, 200));
-        alterarMeusDadosButton.setBackground(new Color(100, 150, 200));
-        buscaPacienteButton.setBackground(new Color(100, 180, 120));
-        buscarVacinaButton.setBackground(new Color(100, 180, 120));
-        consultaCartãoPacienteButton.setBackground(new Color(100, 180, 120));
+
+        SwingUtilities.invokeLater(() -> {
+            AddressBD.setText(addressDB);
+            JLabelUserBD.setText(userDB);
+            AddressBD.setForeground(new Color(100, 180, 120));
+            JLabelUserBD.setForeground(new Color(100, 180, 120));
+            cadastraPacienteButton.setBackground(new Color(100, 150, 200));
+            criarVacinaUserButton.setBackground(new Color(100, 150, 200));
+            criarLoteUserButton.setBackground(new Color(100, 150, 200));
+            realizarAplicaçãoButton.setBackground(new Color(100, 150, 200));
+            alterarMeusDadosButton.setBackground(new Color(100, 150, 200));
+            buscaPacienteButton.setBackground(new Color(100, 180, 120));
+            buscarVacinaButton.setBackground(new Color(100, 180, 120));
+            consultaCartãoPacienteButton.setBackground(new Color(100, 180, 120));
+        });
 
         addWindowListener(new WindowAdapter() {
             @Override
@@ -177,6 +180,18 @@ public class GUI extends JFrame {
         fecharButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                if (connection != null) {
+                    try {
+                        connection.close();
+                        System.out.println("\nDatabase connection closed.");
+                    } catch (SQLException ex) {
+                        System.err.println("Error closing database connection: " + ex.getMessage());
+                        JOptionPane.showMessageDialog(null, "Error closing database connection.", "Error", JOptionPane.ERROR_MESSAGE);
+                        ex.printStackTrace(); // Log the exception for debugging
+                    }
+                } else {
+                    System.out.println("Database connection was null.");
+                }
                 System.out.println("Exiting the application...");
                 System.out.flush();
                 System.exit(0);
@@ -201,13 +216,17 @@ public class GUI extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 if(newDBuserTextField.getText().isBlank() || newDBpassword.getText().isBlank() || newDBaddress.getText().isBlank()){
-                    adminDBconfigLabel1.setText("Todos os campos devem ser preenchidos");
-                    adminDBconfigLabel1.setForeground(Color.RED);
+                    SwingUtilities.invokeLater(() -> {
+                        adminDBconfigLabel1.setText("Todos os campos devem ser preenchidos");
+                        adminDBconfigLabel1.setForeground(Color.RED);
+                    });
                 }else{
                     adminDBconfigLabel1.setText("Insira abaixo novas configurações do Banco de dados:");
-                    adminDBconfigLabel1.setForeground(Color.BLACK);
-                    adminConfigChangeDB.setVisible(false);
-                    landing_Jpanel.setVisible(true);
+                    SwingUtilities.invokeLater(() -> {
+                                adminDBconfigLabel1.setForeground(Color.BLACK);
+                                adminConfigChangeDB.setVisible(false);
+                                landing_Jpanel.setVisible(true);
+                            });
                     setUserDB();
                     setPasswordDB();
                     setPathDB();
@@ -301,25 +320,31 @@ public class GUI extends JFrame {
         adminToUserJbutton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                admin_Jpanel.setVisible(false);
-                user_Jpanel.setVisible(true);
-                usernameLabel1.setText("Olá admin");
+                SwingUtilities.invokeLater(() -> {
+                    admin_Jpanel.setVisible(false);
+                    user_Jpanel.setVisible(true);
+                    usernameLabel1.setText("Olá admin");
+                });
             }
         });
         criarLoteUserButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                criarLoteUser.setVisible(true);
-                user_Jpanel.setVisible(false);
-                batchLabel1.setVisible(false);
+                SwingUtilities.invokeLater(() -> {
+                    criarLoteUser.setVisible(true);
+                    user_Jpanel.setVisible(false);
+                    batchLabel1.setVisible(false);
+                });
             }
         });
         batchToUserButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                user_Jpanel.setVisible(true);
-                criarLoteUser.setVisible(false);
-                batchLabel1.setVisible(false);
+                SwingUtilities.invokeLater(() -> {
+                    user_Jpanel.setVisible(true);
+                    criarLoteUser.setVisible(false);
+                    batchLabel1.setVisible(false);
+                });
             }
         });
 
@@ -328,21 +353,27 @@ public class GUI extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 if(batchIDfield.getText().isBlank() || vaxIDfield.getText().isBlank() || batchExpiration.getText().isBlank() || batchFabField.getText().isBlank()){
-                    batchLabel1.setVisible(true);
-                    batchLabel1.setForeground(Color.RED);
-                    batchLabel1.setText("Todos os campos devem ser preenchidos");
+                    SwingUtilities.invokeLater(() -> {
+                        batchLabel1.setVisible(true);
+                        batchLabel1.setForeground(Color.RED);
+                        batchLabel1.setText("Todos os campos devem ser preenchidos");
+                    });
                 }else if(Integer.parseInt(batchQuantity.getText()) == 0){
-                    batchLabel1.setVisible(true);
-                    batchLabel1.setForeground(Color.RED);
-                    batchLabel1.setText("A quantidade do lote não pode ser 0");
+                    SwingUtilities.invokeLater(() -> {
+                        batchLabel1.setVisible(true);
+                        batchLabel1.setForeground(Color.RED);
+                        batchLabel1.setText("A quantidade do lote não pode ser 0");
+                    });
                 }else{
                     try{
                         try{
                             setBatch();
                             registerLote(lote1);
                             JOptionPane.showMessageDialog(null, "Configurações aplicadas com sucesso!", "Success", JOptionPane.INFORMATION_MESSAGE);
-                            user_Jpanel.setVisible(true);
-                            criarLoteUser.setVisible(false);
+                            SwingUtilities.invokeLater(() -> {
+                                user_Jpanel.setVisible(true);
+                                criarLoteUser.setVisible(false);
+                            });
                         } catch (SQLException j) {
                             JOptionPane.showMessageDialog(null, "Erro ao registrar lote: " + j.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
                             j.printStackTrace(); // Optional: Print stack trace for debugging
@@ -371,48 +402,62 @@ public class GUI extends JFrame {
         buscarVacinaButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                try {
-                    if(searchVaxField1.getText().isBlank()){
-                        JOptionPane.showMessageDialog(null, "O campo ID está vazio", "Erro", JOptionPane.ERROR_MESSAGE);
-                    }else{
-                        searchVax();
-                        searchVaxField1.setText("");
-                        buscarVacinaUser.setVisible(true);
-                        user_Jpanel.setVisible(false);
+                SwingUtilities.invokeLater(() -> {
+                    try {
+                        if (searchVaxField1.getText().isBlank()) {
+                            JOptionPane.showMessageDialog(null, "O campo ID está vazio", "Erro", JOptionPane.ERROR_MESSAGE);
+                        } else {
+                            searchVax();
+                            searchVaxField1.setText("");
+                            SwingUtilities.invokeLater(() -> {
+                                buscarVacinaUser.setVisible(true);
+                                user_Jpanel.setVisible(false);
+                            });
+                        }
+                    } catch (SQLException m) {
+                        JOptionPane.showMessageDialog(null, "Erro ao consultar o banco de dados: " + m.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
+                        SwingUtilities.invokeLater(() -> {
+                            searchVaxField1.setText("");
+                        });
+                        m.printStackTrace();
+                    } catch (NumberFormatException n) {
+                        JOptionPane.showMessageDialog(null, "Erro no formato da entrada", "Erro", JOptionPane.ERROR_MESSAGE);
+                        SwingUtilities.invokeLater(() -> {
+                            searchVaxField1.setText("");
+                        });
+                        n.printStackTrace();
+                    } catch (Exception ex) {
+                        JOptionPane.showMessageDialog(null, ex.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
+                        ex.printStackTrace();
                     }
-                }catch (SQLException m) {
-                    JOptionPane.showMessageDialog(null, "Erro ao consultar o banco de dados: " + m.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
-                    searchVaxField1.setText("");
-                    m.printStackTrace();
-                }catch (NumberFormatException n){
-                    JOptionPane.showMessageDialog(null, "Erro no formato da entrada", "Erro", JOptionPane.ERROR_MESSAGE);
-                    searchVaxField1.setText("");
-                    n.printStackTrace();
-                } catch (Exception ex) {
-                    JOptionPane.showMessageDialog(null, ex.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
-                    ex.printStackTrace();
-                }
+                });
             }
         });
         voltarVacinaToUserButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                buscarVacinaUser.setVisible(false);
-                user_Jpanel.setVisible(true);
+                SwingUtilities.invokeLater(() -> {
+                    buscarVacinaUser.setVisible(false);
+                    user_Jpanel.setVisible(true);
+                });
             }
         });
         voltarPacienteToUserButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                cadastraPacienteUser.setVisible(false);
-                user_Jpanel.setVisible(true);
+                SwingUtilities.invokeLater(() -> {
+                    cadastraPacienteUser.setVisible(false);
+                    user_Jpanel.setVisible(true);
+                });
             }
         });
         cadastraPacienteButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                user_Jpanel.setVisible(false);
-                cadastraPacienteUser.setVisible(true);
+                SwingUtilities.invokeLater(() -> {
+                    user_Jpanel.setVisible(false);
+                    cadastraPacienteUser.setVisible(true);
+                });
             }
         });
         confirmaCadastroPacienteButton.addActionListener(new ActionListener() {
@@ -424,16 +469,18 @@ public class GUI extends JFrame {
                     try {
                         setPaciente();
                         registerPaciente(paciente1);
-                        cadastraPacienteUser.setVisible(false);
-                        user_Jpanel.setVisible(true);
+                        SwingUtilities.invokeLater(() -> {
+                            cadastraPacienteUser.setVisible(false);
+                            user_Jpanel.setVisible(true);
+                        });
 
                     } catch (SQLException m) {
                         JOptionPane.showMessageDialog(null, "Erro ao consultar o banco de dados: " + m.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
-                        searchVaxField1.setText("");
+                        SwingUtilities.invokeLater(() -> { searchPacienteField1.setText(""); });
                         m.printStackTrace();
                     } catch (NumberFormatException n) {
                         JOptionPane.showMessageDialog(null, "Erro no formato da entrada", "Erro", JOptionPane.ERROR_MESSAGE);
-                        searchVaxField1.setText("");
+                        SwingUtilities.invokeLater(() -> { searchPacienteField1.setText(""); });
                         n.printStackTrace();
                     } catch (IllegalArgumentException h) {
                         JOptionPane.showMessageDialog(null, h.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
@@ -451,34 +498,44 @@ public class GUI extends JFrame {
         voltarBuscaPacienteToUserButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                buscarPacienteUser.setVisible(false);
-                user_Jpanel.setVisible(true);
+                SwingUtilities.invokeLater(() -> {
+                    buscarPacienteUser.setVisible(false);
+                    user_Jpanel.setVisible(true);
+                });
             }
         });
         buscaPacienteButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                try {
-                    if(searchPacienteField1.getText().isBlank()){
-                        JOptionPane.showMessageDialog(null, "O campo nome está vazio", "Erro", JOptionPane.ERROR_MESSAGE);
-                    }else{
-                        searchPaciente();
-                        searchPacienteField1.setText("");
-                        buscarPacienteUser.setVisible(true);
-                        user_Jpanel.setVisible(false);
+                SwingUtilities.invokeLater(() -> {
+                    try {
+                        if (searchPacienteField1.getText().isBlank()) {
+                            JOptionPane.showMessageDialog(null, "O campo nome está vazio", "Erro", JOptionPane.ERROR_MESSAGE);
+                        } else {
+                            searchPaciente();
+                            SwingUtilities.invokeLater(() -> {
+                                searchPacienteField1.setText("");
+                                buscarPacienteUser.setVisible(true);
+                                user_Jpanel.setVisible(false);
+                            });
+                        }
+                    } catch (SQLException m) {
+                        JOptionPane.showMessageDialog(null, "Erro ao consultar o banco de dados: " + m.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
+                        SwingUtilities.invokeLater(() -> {
+                            searchPacienteField1.setText("");
+                        });
+                        m.printStackTrace();
+                    } catch (NumberFormatException n) {
+                        JOptionPane.showMessageDialog(null, "Erro no formato da entrada", "Erro", JOptionPane.ERROR_MESSAGE);
+                        SwingUtilities.invokeLater(() -> {
+                            searchPacienteField1.setText("");
+                        });
+                        n.printStackTrace();
+                    } catch (Exception ex) {
+                        JOptionPane.showMessageDialog(null, ex.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
+                        ex.printStackTrace();
                     }
-                }catch (SQLException m) {
-                    JOptionPane.showMessageDialog(null, "Erro ao consultar o banco de dados: " + m.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
-                    searchVaxField1.setText("");
-                    m.printStackTrace();
-                }catch (NumberFormatException n){
-                    JOptionPane.showMessageDialog(null, "Erro no formato da entrada", "Erro", JOptionPane.ERROR_MESSAGE);
-                    searchVaxField1.setText("");
-                    n.printStackTrace();
-                } catch (Exception ex) {
-                    JOptionPane.showMessageDialog(null, ex.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
-                    ex.printStackTrace();
-                }
+                });
             }
 
         });
@@ -526,11 +583,15 @@ public class GUI extends JFrame {
     private void performLogin(){
         setPassword();
         setUsername();
-        textField1.setText("");
-        passwordField1.setText("");
+        SwingUtilities.invokeLater(() -> {
+            textField1.setText("");
+            passwordField1.setText("");
+        });
         if(auth().equals("admin")){
-            landing_Jpanel.setVisible(false);
-            admin_Jpanel.setVisible(true);
+            SwingUtilities.invokeLater(() -> {
+                landing_Jpanel.setVisible(false);
+                admin_Jpanel.setVisible(true);
+            });
         }
         if(auth().equals("user")){
             try {
@@ -547,9 +608,11 @@ public class GUI extends JFrame {
                     if (salt != null) { // Handle the case where the salt is null
                         String enteredPasswordHash = Crypto.pbkdf2Hash(password, salt); // Hash the entered password with the retrieved salt.
                         if (enteredPasswordHash.equals(passwordHashFromDB)) {
-                            landing_Jpanel.setVisible(false);
-                            user_Jpanel.setVisible(true);
-                            usernameLabel1.setText("Olá, "+username);
+                            SwingUtilities.invokeLater(() -> {
+                                landing_Jpanel.setVisible(false);
+                                user_Jpanel.setVisible(true);
+                                usernameLabel1.setText("Olá, " + username);
+                            });
                         } else {
                             // Incorrect password - provide feedback to the user
                             JOptionPane.showMessageDialog(null, "Incorrect password.", "Error", JOptionPane.ERROR_MESSAGE);
@@ -748,12 +811,7 @@ public class GUI extends JFrame {
         return Date.valueOf(localDate);
     }
 
-
-
-
-
     public static void main(String[] args) {
         new GUI();
-
     }
 }
