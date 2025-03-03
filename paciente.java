@@ -1,20 +1,30 @@
+
+
 public class paciente extends Pessoa{
+    public String nome;
+    public String cpf;
+    public String sexo;
+    public String endereco;
+    public String email;
+    public String dataNascimento;
 
     //Construtores vazios e populados
-    public paciente (String nome, String cpf, String endereco, int idade, String email) {
+    public paciente (String nome, String cpf, String endereco, String dataNascimento, String email, String sexo) {
         this.nome = nome;
         this.cpf = cpf;
         this.endereco = endereco;
+        this.dataNascimento = dataNascimento;
         this.email = email;
-        this.idade = idade;
+        this.sexo = sexo;
     }
 
     public paciente (){
-        this.nome = "exemplo";
-        this.cpf = "111.111.111-11";
-        this.endereco = "endereco";
-        this.idade = 0;
-        this.email = "exemplo@exemplo.com";
+        this.nome = "";
+        this.cpf = "";
+        this.endereco = "";
+        this.dataNascimento = null;
+        this.email = "";
+        this.sexo = "";
     }
 
 

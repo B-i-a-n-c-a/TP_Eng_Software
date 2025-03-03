@@ -4,6 +4,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.io.*;
 import java.sql.*;
 import java.sql.Date;
@@ -56,7 +58,6 @@ public class GUI extends JFrame {
     private JButton criarVacinaUserButton;
     private JButton criarLoteUserButton;
     private JButton buscarVacinaButton;
-    private JButton buscarLoteButton;
     private JPanel criarLoteUser;
     private JTextField batchIDfield;
     private JTextField vaxIDfield;
@@ -83,9 +84,25 @@ public class GUI extends JFrame {
     private JLabel vaxSearchbatch;
     private JLabel vaxBatchAmount;
     private JTextField searchVaxField1;
-    private JTextField searchPatienteField1;
-    private JTextField searchBatchField1;
+    private JTextField searchPacienteField1;
     private JLabel vaxSearchExpire;
+    private JPanel cadastraPacienteUser;
+    private JTextField cadastroNomePaciente;
+    private JTextField cadastroCPFPaciente;
+    private JTextField cadastroEnderecoPaciente;
+    private JTextField cadastroNascPaciente;
+    private JTextField cadastroEmailPaciente;
+    private JButton confirmaCadastroPacienteButton;
+    private JButton voltarPacienteToUserButton;
+    private JTextField cadastroSexoPaciente;
+    private JPanel buscarPacienteUser;
+    private JLabel pacienteNomeLabel;
+    private JLabel pacienteCPFLabel;
+    private JLabel pacienteEndereçoLabel;
+    private JLabel pacienteEmailLabel;
+    private JLabel pacienteNascLabel;
+    private JLabel pacienteSexoLabel;
+    private JButton voltarBuscaPacienteToUserButton;
     private String password;
     private String username;
     private String adminSalt = "adminpbkdf2";
@@ -96,9 +113,10 @@ public class GUI extends JFrame {
     private String cadastraUserNome1;
     private String cadastraUserSenha1;
     private String query;
-    Gestão_Vacinas vacina = new Gestão_Vacinas();
-    Connection connection;
-    Lote lote1 = new Lote();
+    private Gestão_Vacinas vacina = new Gestão_Vacinas();
+    private Connection connection;
+    private Lote lote1 = new Lote();
+    private paciente paciente1 = new paciente();
 
     public GUI() {
         retrieveDatabaseConfig();
@@ -118,15 +136,13 @@ public class GUI extends JFrame {
         JLabelUserBD.setText(userDB);
         AddressBD.setForeground(new Color(100, 180, 120));
         JLabelUserBD.setForeground(new Color(100, 180, 120));
-        consultarEAlterarDadosButton.setBackground(new Color(100, 150, 200));
         cadastraPacienteButton.setBackground(new Color(100, 150, 200));
         criarVacinaUserButton.setBackground(new Color(100, 150, 200));
         criarLoteUserButton.setBackground(new Color(100, 150, 200));
         realizarAplicaçãoButton.setBackground(new Color(100, 150, 200));
-        alterarMeusDadosButton.setBackground(new Color(100, 180, 120));
+        alterarMeusDadosButton.setBackground(new Color(100, 150, 200));
         buscaPacienteButton.setBackground(new Color(100, 180, 120));
         buscarVacinaButton.setBackground(new Color(100, 180, 120));
-        buscarLoteButton.setBackground(new Color(100, 180, 120));
         consultaCartãoPacienteButton.setBackground(new Color(100, 180, 120));
 
         addWindowListener(new WindowAdapter() {
@@ -139,56 +155,23 @@ public class GUI extends JFrame {
         loginButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                setPassword();
-                setUsername();
-                textField1.setText("");
-                passwordField1.setText("");
-                if(auth().equals("admin")){
-                    landing_Jpanel.setVisible(false);
-                    admin_Jpanel.setVisible(true);
-                }
-                if(auth().equals("user")){
-                    try {
-                        String query = "SELECT password, salt FROM users WHERE username = ?";
-                        PreparedStatement s = connection.prepareStatement(query);
-                        s.setString(1, username);
-                        ResultSet rs = s.executeQuery();
+                performLogin();
+            }
+        });
 
-                        if (rs.next()) { // Check if a row was returned
-                            String passwordHashFromDB = rs.getString("password"); // Use column names
-                            //System.out.println(passwordHashFromDB);
-                            String salt = rs.getString("salt");
+        passwordField1.addKeyListener(new KeyListener() {
+            @Override
+            public void keyTyped(KeyEvent e) {}
 
-                            if (salt != null) { // Handle the case where the salt is null
-                                String enteredPasswordHash = Crypto.pbkdf2Hash(password, salt); // Hash the entered password with the retrieved salt.
-                                if (enteredPasswordHash.equals(passwordHashFromDB)) {
-                                    landing_Jpanel.setVisible(false);
-                                    user_Jpanel.setVisible(true);
-                                    usernameLabel1.setText("Olá "+username);
-                                } else {
-                                    // Incorrect password - provide feedback to the user
-                                    JOptionPane.showMessageDialog(null, "Incorrect password.", "Error", JOptionPane.ERROR_MESSAGE);
-                                }
-                            } else {
-                                // Handle the case where the user doesn't have a salt in the database.
-                                JOptionPane.showMessageDialog(null, "User record is missing salt.", "Error", JOptionPane.ERROR_MESSAGE);
-                            }
-
-                        } else {
-                            // User not found - provide feedback to the user
-                            JOptionPane.showMessageDialog(null, "User not found.", "Error", JOptionPane.ERROR_MESSAGE);
-                        }
-
-                        rs.close(); // Close the ResultSet
-                        s.close(); // Close the PreparedStatement
-
-                    } catch (SQLException f) {
-                        f.printStackTrace();
-                        JOptionPane.showMessageDialog(null, "Database error: " + f.getMessage(), "Error", JOptionPane.ERROR_MESSAGE); // Inform user of database error
-                    }
-                    //Gestão_Vacinas.test();
+            @Override
+            public void keyPressed(KeyEvent e) {
+                if (e.getKeyCode() == KeyEvent.VK_ENTER) {
+                    performLogin();
                 }
             }
+
+            @Override
+            public void keyReleased(KeyEvent e) {}
         });
 
         fecharButton.addActionListener(new ActionListener() {
@@ -354,7 +337,7 @@ public class GUI extends JFrame {
                     batchLabel1.setText("A quantidade do lote não pode ser 0");
                 }else{
                     try{
-                        try {
+                        try{
                             setBatch();
                             registerLote(lote1);
                             JOptionPane.showMessageDialog(null, "Configurações aplicadas com sucesso!", "Success", JOptionPane.INFORMATION_MESSAGE);
@@ -385,13 +368,6 @@ public class GUI extends JFrame {
 
             }
         });
-
-        consultarEAlterarDadosButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-
-            }
-        });
         buscarVacinaButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -408,10 +384,13 @@ public class GUI extends JFrame {
                     JOptionPane.showMessageDialog(null, "Erro ao consultar o banco de dados: " + m.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
                     searchVaxField1.setText("");
                     m.printStackTrace();
-                }catch (Exception n){
-                    JOptionPane.showMessageDialog(null, n.toString(), "Erro", JOptionPane.ERROR_MESSAGE);
+                }catch (NumberFormatException n){
+                    JOptionPane.showMessageDialog(null, "Erro no formato da entrada", "Erro", JOptionPane.ERROR_MESSAGE);
                     searchVaxField1.setText("");
                     n.printStackTrace();
+                } catch (Exception ex) {
+                    JOptionPane.showMessageDialog(null, ex.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
+                    ex.printStackTrace();
                 }
             }
         });
@@ -421,6 +400,87 @@ public class GUI extends JFrame {
                 buscarVacinaUser.setVisible(false);
                 user_Jpanel.setVisible(true);
             }
+        });
+        voltarPacienteToUserButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                cadastraPacienteUser.setVisible(false);
+                user_Jpanel.setVisible(true);
+            }
+        });
+        cadastraPacienteButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                user_Jpanel.setVisible(false);
+                cadastraPacienteUser.setVisible(true);
+            }
+        });
+        confirmaCadastroPacienteButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if(cadastroNomePaciente.getText().isBlank() || cadastroCPFPaciente.getText().isBlank() || cadastroEmailPaciente.getText().isBlank() || cadastroEnderecoPaciente.getText().isBlank() || cadastroNascPaciente.getText().isBlank()){
+                    JOptionPane.showMessageDialog(null, "Todos os campos devem estar preenchidos!", "Erro", JOptionPane.ERROR_MESSAGE);
+                }else {
+                    try {
+                        setPaciente();
+                        registerPaciente(paciente1);
+                        cadastraPacienteUser.setVisible(false);
+                        user_Jpanel.setVisible(true);
+
+                    } catch (SQLException m) {
+                        JOptionPane.showMessageDialog(null, "Erro ao consultar o banco de dados: " + m.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
+                        searchVaxField1.setText("");
+                        m.printStackTrace();
+                    } catch (NumberFormatException n) {
+                        JOptionPane.showMessageDialog(null, "Erro no formato da entrada", "Erro", JOptionPane.ERROR_MESSAGE);
+                        searchVaxField1.setText("");
+                        n.printStackTrace();
+                    } catch (IllegalArgumentException h) {
+                        JOptionPane.showMessageDialog(null, h.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+                        h.printStackTrace();
+                    } catch (DateTimeParseException i) {
+                        JOptionPane.showMessageDialog(null, i.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+                        i.printStackTrace();
+                    } catch (Exception ex) {
+                        JOptionPane.showMessageDialog(null, "Erro desconhecido" + ex.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
+                        ex.printStackTrace();
+                    }
+                }
+            }
+        });
+        voltarBuscaPacienteToUserButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                buscarPacienteUser.setVisible(false);
+                user_Jpanel.setVisible(true);
+            }
+        });
+        buscaPacienteButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                try {
+                    if(searchPacienteField1.getText().isBlank()){
+                        JOptionPane.showMessageDialog(null, "O campo nome está vazio", "Erro", JOptionPane.ERROR_MESSAGE);
+                    }else{
+                        searchPaciente();
+                        searchPacienteField1.setText("");
+                        buscarPacienteUser.setVisible(true);
+                        user_Jpanel.setVisible(false);
+                    }
+                }catch (SQLException m) {
+                    JOptionPane.showMessageDialog(null, "Erro ao consultar o banco de dados: " + m.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
+                    searchVaxField1.setText("");
+                    m.printStackTrace();
+                }catch (NumberFormatException n){
+                    JOptionPane.showMessageDialog(null, "Erro no formato da entrada", "Erro", JOptionPane.ERROR_MESSAGE);
+                    searchVaxField1.setText("");
+                    n.printStackTrace();
+                } catch (Exception ex) {
+                    JOptionPane.showMessageDialog(null, ex.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
+                    ex.printStackTrace();
+                }
+            }
+
         });
     }
     public String auth() {
@@ -454,7 +514,66 @@ public class GUI extends JFrame {
         this.lote1.data_val = batchExpiration.getText();
         this.lote1.quantidade = Integer.parseInt(batchQuantity.getText());
     }
+    public void setPaciente() throws IllegalArgumentException{
+        this.paciente1.nome = cadastroNomePaciente.getText();
+        this.paciente1.email = cadastroEmailPaciente.getText();
+        this.paciente1.cpf = cadastroCPFPaciente.getText();
+        this.paciente1.dataNascimento = cadastroNascPaciente.getText();
+        this.paciente1.endereco = cadastroEnderecoPaciente.getText();
+        this.paciente1.sexo = cadastroSexoPaciente.getText();
+    }
 
+    private void performLogin(){
+        setPassword();
+        setUsername();
+        textField1.setText("");
+        passwordField1.setText("");
+        if(auth().equals("admin")){
+            landing_Jpanel.setVisible(false);
+            admin_Jpanel.setVisible(true);
+        }
+        if(auth().equals("user")){
+            try {
+                String query = "SELECT password, salt FROM users WHERE username = ?";
+                PreparedStatement s = connection.prepareStatement(query);
+                s.setString(1, username);
+                ResultSet rs = s.executeQuery();
+
+                if (rs.next()) { // Check if a row was returned
+                    String passwordHashFromDB = rs.getString("password"); // Use column names
+                    //System.out.println(passwordHashFromDB);
+                    String salt = rs.getString("salt");
+
+                    if (salt != null) { // Handle the case where the salt is null
+                        String enteredPasswordHash = Crypto.pbkdf2Hash(password, salt); // Hash the entered password with the retrieved salt.
+                        if (enteredPasswordHash.equals(passwordHashFromDB)) {
+                            landing_Jpanel.setVisible(false);
+                            user_Jpanel.setVisible(true);
+                            usernameLabel1.setText("Olá, "+username);
+                        } else {
+                            // Incorrect password - provide feedback to the user
+                            JOptionPane.showMessageDialog(null, "Incorrect password.", "Error", JOptionPane.ERROR_MESSAGE);
+                        }
+                    } else {
+                        // Handle the case where the user doesn't have a salt in the database.
+                        JOptionPane.showMessageDialog(null, "User record is missing salt.", "Error", JOptionPane.ERROR_MESSAGE);
+                    }
+
+                } else {
+                    // User not found - provide feedback to the user
+                    JOptionPane.showMessageDialog(null, "User not found.", "Error", JOptionPane.ERROR_MESSAGE);
+                }
+
+                rs.close(); // Close the ResultSet
+                s.close(); // Close the PreparedStatement
+
+            } catch (SQLException f) {
+                f.printStackTrace();
+                JOptionPane.showMessageDialog(null, "Database error: " + f.getMessage(), "Error", JOptionPane.ERROR_MESSAGE); // Inform user of database error
+            }
+            //Gestão_Vacinas.test();
+        }
+    }
 
     public void storeDatabaseConfig(String address, String user, String password) {
         Map<String, String> config = new HashMap<>();
@@ -535,7 +654,7 @@ public class GUI extends JFrame {
                 e.printStackTrace();
             }
     }
-    public void searchVax() throws SQLException, Exception{
+    public void searchVax() throws SQLException, NumberFormatException, Exception{
         int id = Integer.parseInt(searchVaxField1.getText());
         query = "SELECT vp.id_vacina, vp.nome_vacina, vp.tipo_vacina, vp.fabricante, l.id_lote, l.data_validade, l.quantidade FROM vacina_padronizada vp INNER JOIN lote l ON vp.id_vacina = l.id_vacina WHERE vp.id_vacina = ?;";
         PreparedStatement ps = connection.prepareStatement(query);
@@ -556,8 +675,7 @@ public class GUI extends JFrame {
         }
 
     }
-    public void registerLote(Lote lote) throws SQLException, NullPointerException, Exception{
-        try {
+    public void registerLote(Lote lote) throws SQLException, NullPointerException, DateTimeParseException, Exception{
             PreparedStatement insertState = connection.prepareStatement("INSERT INTO lote(id_lote, id_vacina, data_fabricacao, data_validade, quantidade) VALUES (?,?,?,?,?)");
             insertState.setInt(1, lote.id_lote);
             insertState.setInt(2, lote.id_vacina);
@@ -569,16 +687,37 @@ public class GUI extends JFrame {
 
             insertState.executeUpdate();
             JOptionPane.showMessageDialog(null, "Lote registrado com sucesso!", "Sucesso", JOptionPane.INFORMATION_MESSAGE);
+    }
 
-        } catch (SQLException e) {
-            JOptionPane.showMessageDialog(null, "Erro ao registrar lote: " + e.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
-            e.printStackTrace();
-        } catch (DateTimeParseException e) {
-            JOptionPane.showMessageDialog(null, "Erro: formato de data inválido. Use DD/MM/AAAA ou DD-MM-AAAA.", "Erro", JOptionPane.ERROR_MESSAGE);
-            e.printStackTrace();
-        } catch (Exception e) {
-            JOptionPane.showMessageDialog(null, "Ocorreu um erro inesperado: " + e.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
-            e.printStackTrace();
+    public void registerPaciente(paciente paciente) throws SQLException, NullPointerException, DateTimeParseException, Exception{
+            PreparedStatement insertState = connection.prepareStatement("INSERT INTO paciente(nome, cpf, endereco, email, data_nasc, sexo) VALUES (?,?,?,?,?,?)");
+            insertState.setString(1, paciente.nome);
+            insertState.setString(2, paciente.cpf);
+            insertState.setString(3, paciente.endereco);
+            insertState.setString(4, paciente.email);
+            insertState.setDate(5, parseAndFormatDate(paciente.dataNascimento));
+            insertState.setString(6, paciente.sexo);
+            insertState.executeUpdate();
+        JOptionPane.showMessageDialog(null, "Paciente registrado com sucesso!", "Sucesso", JOptionPane.INFORMATION_MESSAGE);
+
+    }
+    public void searchPaciente() throws SQLException, NumberFormatException, Exception {
+        String name = searchPacienteField1.getText();
+        query = "SELECT nome, cpf, endereco, email, data_nasc, sexo FROM paciente WHERE nome = ?;";
+        PreparedStatement ps = connection.prepareStatement(query);
+        ps.setString(1, name);
+        ResultSet rs = ps.executeQuery();
+        if (!rs.isBeforeFirst()) {
+            throw new Exception("Pessoa não encontrada com o Nome: " + name);
+        } else {
+            while (rs.next()) {
+                pacienteNomeLabel.setText(rs.getString("nome"));
+                pacienteCPFLabel.setText(rs.getString("cpf"));
+                pacienteEmailLabel.setText(rs.getString("email"));
+                pacienteEndereçoLabel.setText(rs.getString("endereco"));
+                pacienteNascLabel.setText(String.valueOf(rs.getString("data_nasc")));
+                pacienteSexoLabel.setText(rs.getString("sexo"));
+            }
         }
     }
 
