@@ -103,6 +103,12 @@ public class GUI extends JFrame {
     private JLabel pacienteNascLabel;
     private JLabel pacienteSexoLabel;
     private JButton voltarBuscaPacienteToUserButton;
+    private JPanel vacinar_Jpanel;
+    private JTextField aplicacaoCPFfield;
+    private JTextField aplicacaoIDvacinaField;
+    private JButton confirmarAplicaçãoButton;
+    private JButton voltarButton;
+    private JTextField aplicacaoIDloteField;
     private String password;
     private String username;
     private String adminSalt = "adminpbkdf2";
@@ -117,6 +123,9 @@ public class GUI extends JFrame {
     private Connection connection;
     private Lote lote1 = new Lote();
     private paciente paciente1 = new paciente();
+    private String IDVacina;
+    private String CPF;
+    private String IDLote;
 
     public GUI() {
         retrieveDatabaseConfig();
@@ -133,7 +142,6 @@ public class GUI extends JFrame {
         setLocationRelativeTo(null);
         setVisible(true);
 
-        SwingUtilities.invokeLater(() -> {
             AddressBD.setText(addressDB);
             JLabelUserBD.setText(userDB);
             AddressBD.setForeground(new Color(100, 180, 120));
@@ -142,11 +150,9 @@ public class GUI extends JFrame {
             criarVacinaUserButton.setBackground(new Color(100, 150, 200));
             criarLoteUserButton.setBackground(new Color(100, 150, 200));
             realizarAplicaçãoButton.setBackground(new Color(100, 150, 200));
-            alterarMeusDadosButton.setBackground(new Color(100, 150, 200));
             buscaPacienteButton.setBackground(new Color(100, 180, 120));
             buscarVacinaButton.setBackground(new Color(100, 180, 120));
             consultaCartãoPacienteButton.setBackground(new Color(100, 180, 120));
-        });
 
         addWindowListener(new WindowAdapter() {
             @Override
@@ -513,23 +519,19 @@ public class GUI extends JFrame {
                             JOptionPane.showMessageDialog(null, "O campo nome está vazio", "Erro", JOptionPane.ERROR_MESSAGE);
                         } else {
                             searchPaciente();
-                            SwingUtilities.invokeLater(() -> {
+
                                 searchPacienteField1.setText("");
                                 buscarPacienteUser.setVisible(true);
                                 user_Jpanel.setVisible(false);
-                            });
+
                         }
                     } catch (SQLException m) {
                         JOptionPane.showMessageDialog(null, "Erro ao consultar o banco de dados: " + m.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
-                        SwingUtilities.invokeLater(() -> {
-                            searchPacienteField1.setText("");
-                        });
+                        searchPacienteField1.setText("");
                         m.printStackTrace();
                     } catch (NumberFormatException n) {
                         JOptionPane.showMessageDialog(null, "Erro no formato da entrada", "Erro", JOptionPane.ERROR_MESSAGE);
-                        SwingUtilities.invokeLater(() -> {
-                            searchPacienteField1.setText("");
-                        });
+                        searchPacienteField1.setText("");
                         n.printStackTrace();
                     } catch (Exception ex) {
                         JOptionPane.showMessageDialog(null, ex.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
@@ -538,6 +540,70 @@ public class GUI extends JFrame {
                 });
             }
 
+        });
+        realizarAplicaçãoButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                SwingUtilities.invokeLater(() -> {
+                    user_Jpanel.setVisible(false);
+                    vacinar_Jpanel.setVisible(true);
+                });
+            }
+        });
+        voltarButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                SwingUtilities.invokeLater(() -> {
+                   vacinar_Jpanel.setVisible(false);
+                   user_Jpanel.setVisible(true);
+                });
+            }
+        });
+        confirmarAplicaçãoButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                SwingUtilities.invokeLater(() -> {
+                    if (aplicacaoCPFfield.getText().isBlank() || aplicacaoIDvacinaField.getText().isBlank() || aplicacaoIDloteField.getText().isBlank()) {
+                        JOptionPane.showMessageDialog(null, "Todos os campos devem estar preenchidos", "Erro", JOptionPane.ERROR_MESSAGE);
+                    }else{
+                        try {
+                            setIDVacina();
+                            setCPFvacina();
+                            setIDLote();
+                            if(checkVacinaPaciente(IDVacina, IDLote, CPF, connection)) {
+                                registerAplicacao(CPF, IDVacina, IDLote);
+                                aplicacaoCPFfield.setText("");
+                                aplicacaoIDvacinaField.setText("");
+                                aplicacaoIDloteField.setText("");
+                            }else{
+                                JOptionPane.showMessageDialog(null, "Vacina ou paciente não encontrados", "Erro", JOptionPane.ERROR_MESSAGE);
+                                aplicacaoCPFfield.setText("");
+                                aplicacaoIDvacinaField.setText("");
+                                aplicacaoIDloteField.setText("");
+                            }
+                        } catch (SQLException n) {
+                            aplicacaoCPFfield.setText("");
+                            aplicacaoIDvacinaField.setText("");
+                            aplicacaoIDloteField.setText("");
+                            JOptionPane.showMessageDialog(null, "Erro ao registrar aplicação: " + n.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
+                            n.printStackTrace();
+                        } catch (NullPointerException m) {
+                            aplicacaoCPFfield.setText("");
+                            aplicacaoIDvacinaField.setText("");
+                            aplicacaoIDloteField.setText("");
+                            JOptionPane.showMessageDialog(null, "Erro: CPF ou ID da Vacina nulo.", "Erro", JOptionPane.ERROR_MESSAGE);
+                            m.printStackTrace();
+                        } catch (Exception o) {
+                            aplicacaoCPFfield.setText("");
+                            aplicacaoIDvacinaField.setText("");
+                            aplicacaoIDloteField.setText("");
+                            JOptionPane.showMessageDialog(null, o.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
+                            o.printStackTrace();
+                        }
+                    }
+
+                });
+            }
         });
     }
     public String auth() {
@@ -558,6 +624,9 @@ public class GUI extends JFrame {
     public void setCadastraUserSenha(){this.cadastraUserSenha1 = new String(CadastraUserSenha.getPassword());}
     public String getCadastraUserSenha(){return this.cadastraUserSenha1;}
     public String getCadastraUsernome(){return this.cadastraUserNome1;}
+    public void setIDVacina(){this.IDVacina = aplicacaoIDvacinaField.getText();}
+    public void setCPFvacina(){this.CPF = aplicacaoCPFfield.getText();}
+    public void setIDLote(){this.IDLote = aplicacaoIDloteField.getText();}
     public void setVacinaUser(){
         this.vacina.id_vacina = Integer.parseInt(new String(idvacinaUSER.getText()));
         this.vacina.nome_vacina = new String(nomevacinaUSER.getText());
@@ -705,6 +774,41 @@ public class GUI extends JFrame {
             }
     }
 
+    public boolean checkVacinaPaciente(String idVacina, String idlote, String cpf, Connection connection) throws SQLException {
+        boolean vacinaExists = false;
+        boolean pacienteExists = false;
+        boolean loteExists = false;
+
+        // Check if vacina exists
+        String queryVacina = "SELECT 1 FROM vacina_padronizada WHERE id_vacina = ?";
+        try (PreparedStatement psVacina = connection.prepareStatement(queryVacina)) {
+            psVacina.setInt(1, Integer.parseInt(idVacina));
+            try (ResultSet rsVacina = psVacina.executeQuery()) {
+                vacinaExists = rsVacina.next(); // True if a row is found
+            }
+        }
+
+        // Check if paciente exists
+        String queryPaciente = "SELECT 1 FROM paciente WHERE cpf = ?";
+        try (PreparedStatement psPaciente = connection.prepareStatement(queryPaciente)) {
+            psPaciente.setString(1, cpf);
+            try (ResultSet rsPaciente = psPaciente.executeQuery()) {
+                pacienteExists = rsPaciente.next(); // True if a row is found
+            }
+        }
+
+        // Check if lote exists
+        String queryLote = "SELECT 1 FROM lote WHERE id_lote = ?";
+        try (PreparedStatement psLote = connection.prepareStatement(queryLote)) {
+            psLote.setInt(1, Integer.parseInt(idlote));
+            try (ResultSet rsLote = psLote.executeQuery()) {
+                loteExists = rsLote.next(); // True if a row is found
+            }
+        }
+
+        return vacinaExists && pacienteExists && loteExists;
+    }
+
     public void registerUser(String username, String hashpassword, String salt){
             try{
                 PreparedStatement insertState = connection.prepareStatement("INSERT INTO users(username, password, salt) VALUES (?,?,?)");
@@ -764,6 +868,44 @@ public class GUI extends JFrame {
         JOptionPane.showMessageDialog(null, "Paciente registrado com sucesso!", "Sucesso", JOptionPane.INFORMATION_MESSAGE);
 
     }
+
+    public void registerAplicacao(String CPF, String IDVaxx, String idLote) throws SQLException, NullPointerException, DateTimeParseException, Exception{
+        int idVacina = Integer.parseInt(IDVaxx);
+        int loteId = Integer.parseInt(idLote);
+
+        String queryLote = "SELECT quantidade FROM lote WHERE id_lote = ? AND id_vacina = ?";
+        PreparedStatement psLote = connection.prepareStatement(queryLote);
+        psLote.setInt(1, loteId);
+        psLote.setInt(2, idVacina);
+        ResultSet rsLote = psLote.executeQuery();
+        if (rsLote.next()) {
+            int quantidadeAtual = rsLote.getInt("quantidade");
+            if (quantidadeAtual > 0) {
+                String updateQuery = "UPDATE lote SET quantidade = ? WHERE id_lote = ? AND id_vacina = ?";
+                PreparedStatement updatePs = connection.prepareStatement(updateQuery);
+                updatePs.setInt(1, quantidadeAtual - 1);
+                updatePs.setInt(2, loteId);
+                System.out.println(loteId);
+                System.out.println(idVacina);
+                updatePs.setInt(3, idVacina);
+                updatePs.executeUpdate();
+
+                PreparedStatement insertState = connection.prepareStatement("INSERT INTO historico_vacinacao(cpf_aplicacao, id_vacina_aplicacao, data_aplicacao) VALUES (?,?,?)");
+                insertState.setString(1, CPF);
+                insertState.setInt(2, idVacina);
+                LocalDate currentDate = LocalDate.now();
+                Date sqlDate = Date.valueOf(currentDate);
+                insertState.setDate(3, sqlDate);
+                insertState.executeUpdate();
+                JOptionPane.showMessageDialog(null, "Aplicação registrada com sucesso!", "Sucesso", JOptionPane.INFORMATION_MESSAGE);
+            }else{
+                throw new Exception("Lote sem vacinas disponíveis.");
+            }
+        }else{
+            throw new Exception("Lote não encontrado.");
+        }
+    }
+
     public void searchPaciente() throws SQLException, NumberFormatException, Exception {
         String name = searchPacienteField1.getText();
         query = "SELECT nome, cpf, endereco, email, data_nasc, sexo FROM paciente WHERE nome = ?;";
