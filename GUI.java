@@ -1,4 +1,6 @@
 import javax.swing.*;
+import javax.swing.filechooser.FileNameExtensionFilter;
+import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -13,6 +15,12 @@ import java.time.format.DateTimeParseException;
 import java.util.*;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import com.itextpdf.kernel.pdf.PdfDocument;
+import com.itextpdf.kernel.pdf.PdfWriter;
+import com.itextpdf.layout.Document;
+import com.itextpdf.layout.element.Table;
+import com.itextpdf.layout.element.Cell;
+import com.itextpdf.layout.element.Paragraph;
 
 //Esta classe inicia a interface de usuário e interage com os demais recursos da aplicação
 
@@ -28,7 +36,6 @@ public class GUI extends JFrame {
     private JPanel consulta_user;
     private JPanel cadastra_user;
     private JPanel insere_vacina_user;
-    private JButton consultaUserButton;
     private JButton cadastraUserButton;
     private JButton consultarEAlterarDadosButton;
     private JLabel JLabelUserBD;
@@ -109,6 +116,12 @@ public class GUI extends JFrame {
     private JButton confirmarAplicaçãoButton;
     private JButton voltarButton;
     private JTextField aplicacaoIDloteField;
+    private JLabel pacienteConsultaVacinaNome;
+    private JButton exportarButton;
+    private JButton voltarHistoricoToUserButton;
+    private JPanel buscaHistorico;
+    private JTextField consultaHistoricoField;
+    private JTable queryResultTable;
     private String password;
     private String username;
     private String adminSalt = "adminpbkdf2";
@@ -126,6 +139,7 @@ public class GUI extends JFrame {
     private String IDVacina;
     private String CPF;
     private String IDLote;
+    private ResultSet importRS;
 
     public GUI() {
         retrieveDatabaseConfig();
@@ -138,10 +152,10 @@ public class GUI extends JFrame {
         setContentPane(background);
         setTitle("Sistema vacinação");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setSize(600, 400);
+        setSize(800, 600);
         setLocationRelativeTo(null);
         setVisible(true);
-
+        SwingUtilities.invokeLater(() -> {
             AddressBD.setText(addressDB);
             JLabelUserBD.setText(userDB);
             AddressBD.setForeground(new Color(100, 180, 120));
@@ -153,6 +167,9 @@ public class GUI extends JFrame {
             buscaPacienteButton.setBackground(new Color(100, 180, 120));
             buscarVacinaButton.setBackground(new Color(100, 180, 120));
             consultaCartãoPacienteButton.setBackground(new Color(100, 180, 120));
+            queryResultTable.setBackground(new Color(200, 255, 220));
+        });
+
 
         addWindowListener(new WindowAdapter() {
             @Override
@@ -415,22 +432,17 @@ public class GUI extends JFrame {
                         } else {
                             searchVax();
                             searchVaxField1.setText("");
-                            SwingUtilities.invokeLater(() -> {
-                                buscarVacinaUser.setVisible(true);
-                                user_Jpanel.setVisible(false);
-                            });
+                            buscarVacinaUser.setVisible(true);
+                            user_Jpanel.setVisible(false);
+
                         }
                     } catch (SQLException m) {
                         JOptionPane.showMessageDialog(null, "Erro ao consultar o banco de dados: " + m.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
-                        SwingUtilities.invokeLater(() -> {
-                            searchVaxField1.setText("");
-                        });
+                        searchVaxField1.setText("");
                         m.printStackTrace();
                     } catch (NumberFormatException n) {
                         JOptionPane.showMessageDialog(null, "Erro no formato da entrada", "Erro", JOptionPane.ERROR_MESSAGE);
-                        SwingUtilities.invokeLater(() -> {
-                            searchVaxField1.setText("");
-                        });
+                        searchVaxField1.setText("");
                         n.printStackTrace();
                     } catch (Exception ex) {
                         JOptionPane.showMessageDialog(null, ex.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
@@ -603,6 +615,54 @@ public class GUI extends JFrame {
                     }
 
                 });
+            }
+        });
+        consultaCartãoPacienteButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                SwingUtilities.invokeLater(() -> {
+                    if(consultaHistoricoField.getText().isBlank()){
+                        JOptionPane.showMessageDialog(null, "Campo CPF não preenchido!", "Erro", JOptionPane.ERROR_MESSAGE);
+                    }else {
+                        try {
+                            searchHistorico();
+                            user_Jpanel.setVisible(false);
+                            buscaHistorico.setVisible(true);
+                        }catch (SQLException ex) {
+                            JOptionPane.showMessageDialog(null, "Erro no banco de dados:" + ex.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
+                            ex.printStackTrace();
+                        }catch (IllegalArgumentException ey){
+                            JOptionPane.showMessageDialog(null, ey.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
+                            ey.printStackTrace();
+                        }catch (Exception ez){
+                            JOptionPane.showMessageDialog(null, ez.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
+                            ez.printStackTrace();
+                        }
+                    }
+                });
+            }
+        });
+        voltarHistoricoToUserButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                SwingUtilities.invokeLater(() -> {
+                   buscaHistorico.setVisible(false);
+                   user_Jpanel.setVisible(true);
+                });
+            }
+        });
+        exportarButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                try {
+                    // Reset the ResultSet
+                    importRS.beforeFirst();
+                    // Export to PDF
+                    exportResultSetToPdf(importRS, (JFrame) SwingUtilities.getWindowAncestor(buscaHistorico));
+                } catch (SQLException ex) {
+                    ex.printStackTrace();
+                    JOptionPane.showMessageDialog(buscaHistorico, "Error exporting PDF: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+                }
             }
         });
     }
@@ -842,6 +902,21 @@ public class GUI extends JFrame {
         }
 
     }
+
+    public void searchHistorico() throws SQLException, IllegalArgumentException, Exception{
+        String historicoCPF = consultaHistoricoField.getText();
+        pacienteConsultaVacinaNome.setText(consultaHistoricoField.getText());
+        query = "SELECT vacina_padronizada.nome_vacina AS \"Nome da Vacina\", vacina_padronizada.tipo_vacina AS \"Tipo da Vacina\", historico_vacinacao.data_aplicacao AS \"Data de Aplicação\", paciente.nome AS \"Nome do Paciente\" FROM historico_vacinacao JOIN vacina_padronizada ON historico_vacinacao.id_vacina_aplicacao = vacina_padronizada.id_vacina JOIN paciente ON historico_vacinacao.cpf_aplicacao = paciente.cpf WHERE paciente.cpf = ? ORDER BY historico_vacinacao.data_aplicacao DESC";
+        PreparedStatement ps = connection.prepareStatement(query, ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
+        ps.setString(1, historicoCPF);
+        importRS = ps.executeQuery();
+        if (!importRS.isBeforeFirst()) {
+            throw new Exception("Paciente não encontrado com o CPF: " + historicoCPF);
+        }else{
+            resultSetToTableModel(importRS, queryResultTable);
+        }
+    }
+
     public void registerLote(Lote lote) throws SQLException, NullPointerException, DateTimeParseException, Exception{
             PreparedStatement insertState = connection.prepareStatement("INSERT INTO lote(id_lote, id_vacina, data_fabricacao, data_validade, quantidade) VALUES (?,?,?,?,?)");
             insertState.setInt(1, lote.id_lote);
@@ -951,6 +1026,75 @@ public class GUI extends JFrame {
         }
 
         return Date.valueOf(localDate);
+    }
+
+    //This function came from: https://stackoverflow.com/questions/10620448/how-to-populate-jtable-from-resultset
+    public void resultSetToTableModel(ResultSet rs, JTable table) throws SQLException{
+
+        DefaultTableModel tableModel = new DefaultTableModel();
+        ResultSetMetaData metaData = rs.getMetaData();
+        int columnCount = metaData.getColumnCount();
+        for (int columnIndex = 1; columnIndex <= columnCount; columnIndex++){
+            tableModel.addColumn(metaData.getColumnLabel(columnIndex));
+        }
+        Object[] row = new Object[columnCount];
+        while (rs.next()){
+            for (int i = 0; i < columnCount; i++){
+                row[i] = rs.getObject(i+1);
+            }
+            tableModel.addRow(row);
+        }
+        table.setModel(tableModel);
+    }
+
+    public static void exportResultSetToPdf(ResultSet resultSet, JFrame parentFrame) {
+        JFileChooser fileChooser = new JFileChooser();
+        fileChooser.setDialogTitle("Save PDF");
+        FileNameExtensionFilter filter = new FileNameExtensionFilter("PDF files (*.pdf)", "pdf");
+        fileChooser.setFileFilter(filter);
+
+        int userSelection = fileChooser.showSaveDialog(parentFrame);
+
+        if (userSelection == JFileChooser.APPROVE_OPTION) {
+            File fileToSave = fileChooser.getSelectedFile();
+            String filePath = fileToSave.getAbsolutePath();
+
+            // Append .pdf extension if not already present
+            if (!filePath.toLowerCase().endsWith(".pdf")) {
+                filePath += ".pdf";
+            }
+
+            try {
+                PdfWriter writer = new PdfWriter(filePath);
+                PdfDocument pdf = new PdfDocument(writer);
+                Document document = new Document(pdf);
+
+                ResultSetMetaData metaData = resultSet.getMetaData();
+                int columnCount = metaData.getColumnCount();
+
+                Table table = new Table(columnCount);
+
+                // Add header
+                for (int i = 1; i <= columnCount; i++) {
+                    table.addCell(new Cell().add(new Paragraph(metaData.getColumnLabel(i)))); // Wrap in Paragraph
+                }
+
+                // Add data
+                while (resultSet.next()) {
+                    for (int i = 1; i <= columnCount; i++) {
+                        table.addCell(new Cell().add(new Paragraph(resultSet.getString(i)))); // Wrap in Paragraph
+                    }
+                }
+
+                document.add(table);
+                document.close();
+                JOptionPane.showMessageDialog(parentFrame, "PDF exported successfully!");
+
+            } catch (IOException | SQLException e) {
+                JOptionPane.showMessageDialog(parentFrame, "Error exporting PDF: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+                e.printStackTrace();
+            }
+        }
     }
 
     public static void main(String[] args) {
