@@ -122,6 +122,12 @@ public class GUI extends JFrame {
     private JPanel buscaHistorico;
     private JTextField consultaHistoricoField;
     private JTable queryResultTable;
+    private JTextField cadastraUserCPF;
+    private JTextField cadastraUserEndereco;
+    private JTextField cadastraUserNasc;
+    private JTextField cadastraUserEmail;
+    private JTextField cadastraUserCRM;
+    private JPasswordField CadastraUserConfirmaPassword;
     private String password;
     private String username;
     private String adminSalt = "adminpbkdf2";
@@ -131,6 +137,7 @@ public class GUI extends JFrame {
     private String addressDB;
     private String cadastraUserNome1;
     private String cadastraUserSenha1;
+    private String cadastraUserSenha2;
     private String query;
     private Gestão_Vacinas vacina = new Gestão_Vacinas();
     private Connection connection;
@@ -140,6 +147,7 @@ public class GUI extends JFrame {
     private String CPF;
     private String IDLote;
     private ResultSet importRS;
+    private Funcionario funcionario1 = new Funcionario();
 
     public GUI() {
         retrieveDatabaseConfig();
@@ -260,26 +268,61 @@ public class GUI extends JFrame {
         cadastraUserButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                admin_Jpanel.setVisible(false);
-                cadastra_user.setVisible(true);
+                SwingUtilities.invokeLater(() -> {
+                    admin_Jpanel.setVisible(false);
+                    cadastra_user.setVisible(true);
+                });
             }
         });
         cadastraToAdminButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                cadastra_user.setVisible(false);
-                admin_Jpanel.setVisible(true);
+                SwingUtilities.invokeLater(() -> {
+                    cadastra_user.setVisible(false);
+                    admin_Jpanel.setVisible(true);
+                });
             }
         });
         confirmaCadastroUserButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                setCadastraUserNome();
-                setCadastraUserSenha();
-                String salt = Crypto.generateSalt(16);
-                String hash = Crypto.pbkdf2Hash(getCadastraUserSenha(), salt);
-                registerUser(getCadastraUsernome(), hash, salt);
-                //isto apenas registra o usuário. Necessário fazer buscador de login no sistema com conexão ao bd
+                SwingUtilities.invokeLater(() -> {
+                    if(CadastraUserNome.getText().isBlank() || cadastraUserCPF.getText().isBlank() || cadastraUserEmail.getText().isBlank() || cadastraUserCRM.getText().isBlank() || cadastraUserNasc.getText().isBlank() || cadastraUserEndereco.getText().isBlank()){
+                        JOptionPane.showMessageDialog(null, "Todos os campos devem estar preenchidos!", "Erro", JOptionPane.ERROR_MESSAGE);
+                    }else {
+                        try {
+                            setCadastraUserNome();
+                            setCadastraUserSenha();
+                            setCadastraUserConfirmaSenha();
+                            if(comparePasswords(CadastraUserSenha, CadastraUserConfirmaPassword)) {
+                                setFuncionario();
+                                String salt = Crypto.generateSalt(16);
+                                String hash = Crypto.pbkdf2Hash(getCadastraUserSenha(), salt);
+                                registerUser(getCadastraUsernome(), hash, salt, funcionario1);
+                                JOptionPane.showMessageDialog(null, "Funcionário registrado com sucesso!", "Sucesso", JOptionPane.INFORMATION_MESSAGE);
+                                cadastra_user.setVisible(false);
+                                admin_Jpanel.setVisible(true);
+                            }else{
+                                JOptionPane.showMessageDialog(null, "As senhas devem ser iguais!", "Erro", JOptionPane.ERROR_MESSAGE);
+                            }
+                        } catch (SQLException m) {
+                            JOptionPane.showMessageDialog(null, m.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
+                            m.printStackTrace();
+                        } catch (NumberFormatException n) {
+                            JOptionPane.showMessageDialog(null, "Erro no formato da entrada", "Erro", JOptionPane.ERROR_MESSAGE);
+                            n.printStackTrace();
+                        } catch (IllegalArgumentException h) {
+                            JOptionPane.showMessageDialog(null, h.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+                            h.printStackTrace();
+                        } catch (DateTimeParseException i) {
+                            JOptionPane.showMessageDialog(null, i.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+                            i.printStackTrace();
+                        } catch (Exception ex) {
+                            JOptionPane.showMessageDialog(null, "Erro desconhecido" + ex.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
+                            ex.printStackTrace();
+                        }
+                    }
+                });
             }
         });
         configuraçõesButton.addActionListener(new ActionListener() {
@@ -666,6 +709,7 @@ public class GUI extends JFrame {
             }
         });
     }
+
     public String auth() {
         if(this.username.equals("admin") && this.adminHash.equals(Crypto.pbkdf2Hash(this.password, this.adminSalt))) {
             return "admin";
@@ -682,6 +726,7 @@ public class GUI extends JFrame {
     public void setPathDB(){this.addressDB = new String(newDBaddress.getText());}
     public void setCadastraUserNome(){this.cadastraUserNome1 = new String(CadastraUserNome.getText());}
     public void setCadastraUserSenha(){this.cadastraUserSenha1 = new String(CadastraUserSenha.getPassword());}
+    private void setCadastraUserConfirmaSenha() {this.cadastraUserSenha2 = new String(CadastraUserConfirmaPassword.getPassword());}
     public String getCadastraUserSenha(){return this.cadastraUserSenha1;}
     public String getCadastraUsernome(){return this.cadastraUserNome1;}
     public void setIDVacina(){this.IDVacina = aplicacaoIDvacinaField.getText();}
@@ -708,6 +753,14 @@ public class GUI extends JFrame {
         this.paciente1.endereco = cadastroEnderecoPaciente.getText();
         this.paciente1.sexo = cadastroSexoPaciente.getText();
     }
+    public void setFuncionario() throws IllegalArgumentException{
+        this.funcionario1.nome = CadastraUserNome.getText();
+        this.funcionario1.cpf = cadastraUserCPF.getText();
+        this.funcionario1.email = cadastraUserEmail.getText();
+        this.funcionario1.idade = parseAndFormatDate(cadastraUserNasc.getText());
+        this.funcionario1.endereco = cadastraUserEndereco.getText();
+        this.funcionario1.crm_coren = cadastraUserCRM.getText();
+    }
 
     private void performLogin(){
         setPassword();
@@ -715,6 +768,9 @@ public class GUI extends JFrame {
         SwingUtilities.invokeLater(() -> {
             textField1.setText("");
             passwordField1.setText("");
+            searchPacienteField1.setText("");
+            searchVaxField1.setText("");
+            consultaHistoricoField.setText("");
         });
         if(auth().equals("admin")){
             SwingUtilities.invokeLater(() -> {
@@ -869,17 +925,32 @@ public class GUI extends JFrame {
         return vacinaExists && pacienteExists && loteExists;
     }
 
-    public void registerUser(String username, String hashpassword, String salt){
-            try{
-                PreparedStatement insertState = connection.prepareStatement("INSERT INTO users(username, password, salt) VALUES (?,?,?)");
-                insertState.setString(1, username);
-                insertState.setString(2, hashpassword);
-                insertState.setString(3, salt);
+    public void registerUser(String username, String hashpassword, String salt, Funcionario func1)throws SQLException, DateTimeParseException, Exception{
+                PreparedStatement checkStatement = connection.prepareStatement("SELECT username FROM users WHERE username = ?");
+                checkStatement.setString(1, username);
+                ResultSet resultSetTest = checkStatement.executeQuery();
+                if(resultSetTest.next()){
+                   System.out.println("Username já existe. Registrando apenas o funcionário.");
+                    JOptionPane.showMessageDialog(null, "Este usuário já existe. Registrando apenas o funcionário.", "Atenção", JOptionPane.INFORMATION_MESSAGE);
+                }else {
+                    PreparedStatement insertState = connection.prepareStatement("INSERT INTO users(username, password, salt) VALUES (?,?,?)");
+                    insertState.setString(1, username);
+                    insertState.setString(2, hashpassword);
+                    insertState.setString(3, salt);
+                    insertState.execute();
+                    System.out.println("Usuário registrado");
+                }
+
+                PreparedStatement insertState = connection.prepareStatement("INSERT INTO funcionarios(nome, cpf, endereco, data_nasc, email, crm_coren) VALUES (?,?,?,?,?,?)");
+                insertState.setString(1, func1.getNome());
+                insertState.setString(2, func1.getCpf());
+                insertState.setString(3, func1.getEndereco());
+                insertState.setDate(4, func1.idade);
+                insertState.setString(5, func1.getEmail());
+                insertState.setString(6, func1.crm_coren);
                 insertState.execute();
-                System.out.println("Usuário registrado");
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
+                System.out.println("Funcionário registrado");
+
     }
     public void searchVax() throws SQLException, NumberFormatException, Exception{
         int id = Integer.parseInt(searchVaxField1.getText());
@@ -965,12 +1036,13 @@ public class GUI extends JFrame {
                 updatePs.setInt(3, idVacina);
                 updatePs.executeUpdate();
 
-                PreparedStatement insertState = connection.prepareStatement("INSERT INTO historico_vacinacao(cpf_aplicacao, id_vacina_aplicacao, data_aplicacao) VALUES (?,?,?)");
+                PreparedStatement insertState = connection.prepareStatement("INSERT INTO historico_vacinacao(cpf_aplicacao, id_vacina_aplicacao, data_aplicacao, nome_funcionario) VALUES (?,?,?,?)");
                 insertState.setString(1, CPF);
                 insertState.setInt(2, idVacina);
                 LocalDate currentDate = LocalDate.now();
                 Date sqlDate = Date.valueOf(currentDate);
                 insertState.setDate(3, sqlDate);
+                insertState.setString(4, username);
                 insertState.executeUpdate();
                 JOptionPane.showMessageDialog(null, "Aplicação registrada com sucesso!", "Sucesso", JOptionPane.INFORMATION_MESSAGE);
             }else{
@@ -999,6 +1071,19 @@ public class GUI extends JFrame {
                 pacienteSexoLabel.setText(rs.getString("sexo"));
             }
         }
+    }
+
+    private boolean comparePasswords(JPasswordField passwordField1, JPasswordField passwordField2) {
+        char[] passwordArray1 = passwordField1.getPassword();
+        char[] passwordArray2 = passwordField2.getPassword();
+
+        boolean passwordsMatch = Arrays.equals(passwordArray1, passwordArray2);
+
+        // Clear the password arrays after comparison (security)
+        Arrays.fill(passwordArray1, '0');
+        Arrays.fill(passwordArray2, '0');
+
+        return passwordsMatch;
     }
 
     private Date parseAndFormatDate(String dateString) throws DateTimeParseException {
@@ -1046,6 +1131,7 @@ public class GUI extends JFrame {
         }
         table.setModel(tableModel);
     }
+
 
     public static void exportResultSetToPdf(ResultSet resultSet, JFrame parentFrame) {
         JFileChooser fileChooser = new JFileChooser();

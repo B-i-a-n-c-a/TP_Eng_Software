@@ -1,25 +1,24 @@
+import java.sql.Date;
+
 public class Funcionario extends Pessoa{
-    private String crm_coren;
-    private String hospitalClinica;
+    public String crm_coren;
 
     //Construtores vazios e populados
     public Funcionario (){
         this.nome = "example";
         this.cpf = "111.111.111-11";
         this.endereco = "endereco";
-        this.idade = 0;
+        this.idade = null;
         this.email = "email@email.com";
         this.crm_coren = "crm_coren";
-        this.hospitalClinica = "hospitalClinica";
     }
-    public Funcionario (String nome, String cpf,String endereco, int idade, String email, String crm_coren, String hospitalClinica){
+    public Funcionario (String nome, String cpf, String endereco, Date idade, String email, String crm_coren){
         this.nome = nome;
         this.cpf = cpf;
         this.endereco = endereco;
         this.idade = idade;
         this.email = email;
         this.crm_coren = crm_coren;
-        this.hospitalClinica = hospitalClinica;
     }
 
     public String getCrm_coren() {
@@ -29,10 +28,4 @@ public class Funcionario extends Pessoa{
         this.crm_coren = crm_coren;
     }
 
-    public String getHospitalClinica() {
-        return hospitalClinica;
-    }
-    public void setHospitalClinica(String hospitalClinica) {
-        this.hospitalClinica = hospitalClinica;
-    }
 }

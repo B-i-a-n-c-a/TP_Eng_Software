@@ -1,6 +1,8 @@
+import java.sql.Date;
+
 public class Pessoa {
         public String nome;
-        public int idade;
+        public Date idade;
         public String cpf;
         public String endereco;
         public String email;
@@ -13,11 +15,11 @@ public class Pessoa {
         this.nome = nome;
     }
 
-    public int getIdade() {
+    public Date getIdade() {
         return idade;
     }
 
-    public void setIdade(int idade) {
+    public void setIdade(Date idade) {
         this.idade = idade;
     }
 
