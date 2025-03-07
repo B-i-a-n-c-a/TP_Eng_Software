@@ -409,47 +409,61 @@ public class GUI extends JFrame {
         configuraçõesButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                user_Jpanel.setVisible(false);
-                adminConfigChangeDB.setVisible(true);
+                SwingUtilities.invokeLater(()-> {
+                    user_Jpanel.setVisible(false);
+                    adminConfigChangeDB.setVisible(true);
+                });
             }
         });
         sairAdminConfigButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                adminConfigChangeDB.setVisible(false);
-                user_Jpanel.setVisible(true);
+                SwingUtilities.invokeLater(()-> {
+                    adminConfigChangeDB.setVisible(false);
+                    user_Jpanel.setVisible(true);
+                });
             }
         });
         criarVacinaUserButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                user_Jpanel.setVisible(false);
-                insere_vacina_user.setVisible(true);
+                SwingUtilities.invokeLater(()-> {
+                    user_Jpanel.setVisible(false);
+                    insere_vacina_user.setVisible(true);
+                });
             }
         });
         ConfirmaVacinaUser.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                setVacinaUser();
-                try{
-                    Gestão_Vacinas.registraVacina(vacina,connection);
-                    insere_vacina_user.setVisible(false);
-                    user_Jpanel.setVisible(true);
-                    setVacinaUser();
-                } catch (SQLException ex) {
-                    JOptionPane.showMessageDialog(null, "Erro ao registrar vacina: " + ex.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE); // Feedback visual com mensagem de erro
-                    ex.printStackTrace(); // Imprime o stack trace para debugging
-                } catch (Exception ex) { // Captura outras exceções inesperadas
-                    JOptionPane.showMessageDialog(null, "Ocorreu um erro inesperado: " + ex.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
-                    ex.printStackTrace();
-                }
+                SwingUtilities.invokeLater(()-> {
+                    if (idvacinaUSER.getText().isBlank() || tipovacinaUSER.getText().isBlank() || fabricantevacinaUSER.getText().isBlank() || nomevacinaUSER.getText().isBlank()) {
+                        JOptionPane.showMessageDialog(null, "Todos os campos devem estar preenchidos!", "Erro", JOptionPane.ERROR_MESSAGE);
+                    } else {
+                        try {
+                            setVacinaUser();
+                            Gestão_Vacinas.registraVacina(vacina, connection);
+                            insere_vacina_user.setVisible(false);
+                            user_Jpanel.setVisible(true);
+                            setVacinaUser();
+                        } catch (SQLException ex) {
+                            JOptionPane.showMessageDialog(null, "Erro ao registrar vacina: " + ex.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE); // Feedback visual com mensagem de erro
+                            ex.printStackTrace(); // Imprime o stack trace para debugging
+                        } catch (Exception ex) { // Captura outras exceções inesperadas
+                            JOptionPane.showMessageDialog(null, "Ocorreu um erro inesperado: " + ex.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
+                            ex.printStackTrace();
+                        }
+                    }
+                });
             }
         });
         voltarVacinaToConfigUser.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                insere_vacina_user.setVisible(false);
-                user_Jpanel.setVisible(true);
+                SwingUtilities.invokeLater(()-> {
+                    insere_vacina_user.setVisible(false);
+                    user_Jpanel.setVisible(true);
+                });
             }
         });
         testarConexãoAdminConfigButton.addActionListener(new ActionListener() {
@@ -809,6 +823,7 @@ public class GUI extends JFrame {
                 });
             }
         });
+
     }
 
     public String auth() {
