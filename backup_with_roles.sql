@@ -215,6 +215,12 @@ COPY public.funcionarios (nome, cpf, endereco, data_nasc, email, crm_coren) FROM
 João Silveira	333.333.333-33	Rua Marco Aurélio, 53, Centro	2000-12-15	jsilveira@gmail.com	123456/MG
 Letícia Ribeiro	444.444.444-44	Avenida Getúlio Vargas, 444, Centro	1995-09-07	ribeirole@outlook.com	111111/MG
 Pâmela Almeida	555.555.555-55	Avenida Castelo Branco, 766, Centro	1999-01-08	pampam@hotmail.com	676788/MG
+João Silva	123.456.789-10	Rua Exemplificação, 123, Novo Exemplo	2002-02-20	js_exemplo@exemplo.com	654321/MG
+Andressa Peixoto	123.456.710-10	Rua Exemplificação, 123, Novo Exemplo	2002-02-20	apeixoto@exemplo.com	654322/MG
+Bianca	123.456.711-10	Rua Exemplificação, 123, Novo Exemplo	2002-02-20	bianca@exemplo.com	654323/MG
+Marcos	123.456.712-10	Rua Exemplificação, 123, Novo Exemplo	2002-02-20	marcos@exemplo.com	654333/MG
+Rathurenny	123.456.715-10	Rua Exemplificação, 123, Novo Exemplo	2002-02-20	rathurenny@exemplo.com	654444/MG
+Cledislene	123.456.716-10	Rua Exemplificação, 123, Novo Exemplo	2002-02-20	cleidinha@exemplo.com	654555/MG
 \.
 
 
@@ -223,19 +229,35 @@ Pâmela Almeida	555.555.555-55	Avenida Castelo Branco, 766, Centro	1999-01-08	pa
 --
 
 COPY public.historico_vacinacao ("id_aplicação", cpf_aplicacao, id_vacina_aplicacao, data_aplicacao, nome_funcionario) FROM stdin;
-8	111.111.111-11	5	2024-08-15	\N
-9	111.111.111-11	1	2024-09-20	\N
-10	111.111.111-11	8	2024-10-25	\N
-11	111.111.111-11	12	2024-11-30	\N
-12	111.111.111-11	3	2024-12-05	\N
-13	111.111.111-11	10	2025-01-10	\N
-14	111.111.111-11	7	2025-02-15	\N
-15	111.111.111-11	14	2025-03-20	\N
-16	111.111.111-11	2	2025-04-25	\N
-17	111.111.111-11	9	2025-05-30	\N
-18	222.222.222-22	15	2025-03-05	\N
 19	222.222.222-22	8	2025-03-06	admin
 20	222.222.222-22	14	2025-03-06	Andressa Peixoto
+18	222.222.222-22	15	2025-03-05	Letícia Ribeiro
+17	111.111.111-11	9	2025-05-30	João Silveira
+16	111.111.111-11	2	2025-04-25	Pâmela Almeida
+11	111.111.111-11	12	2024-11-30	Marcos
+10	111.111.111-11	8	2024-10-25	Bianca
+8	111.111.111-11	5	2024-08-15	João Silva
+9	111.111.111-11	1	2024-09-20	Andressa Peixoto
+15	111.111.111-11	14	2025-03-20	Letícia Ribeiro
+14	111.111.111-11	7	2025-02-15	João Silveira
+12	111.111.111-11	3	2024-12-05	Rathurenny
+13	111.111.111-11	10	2025-01-10	Cledislene
+21	222.222.222-22	17	2023-01-10	Andressa Peixoto
+22	222.222.222-22	25	2023-02-15	Letícia Ribeiro
+23	222.222.222-22	30	2023-03-20	João Silveira
+24	222.222.222-22	19	2023-04-25	Pâmela Almeida
+25	222.222.222-22	28	2023-05-30	Marcos
+26	222.222.222-22	22	2023-06-05	Bianca
+27	222.222.222-22	32	2023-07-10	João Silva
+28	222.222.222-22	20	2023-08-15	Andressa Peixoto
+29	222.222.222-22	27	2023-09-20	Letícia Ribeiro
+30	222.222.222-22	23	2023-10-25	João Silveira
+31	222.222.222-22	31	2023-11-30	Rathurenny
+32	222.222.222-22	26	2023-12-05	Cledislene
+33	222.222.222-22	18	2024-01-10	Andressa Peixoto
+34	222.222.222-22	29	2024-02-15	Letícia Ribeiro
+35	222.222.222-22	21	2024-03-20	João Silveira
+36	222.222.222-22	24	2024-04-25	Pâmela Almeida
 \.
 
 
@@ -259,6 +281,22 @@ COPY public.lote (id_lote, id_vacina, data_fabricacao, data_validade, quantidade
 2024015	15	2024-03-25	2027-04-30	2599
 2023008	8	2023-08-20	2026-09-30	1899
 2024014	14	2024-02-20	2026-03-31	1399
+202517	17	2025-01-15	2027-01-15	1000
+202518	18	2025-02-20	2027-02-20	1500
+202519	19	2025-03-25	2027-03-25	1200
+202520	20	2025-04-30	2027-04-30	800
+202521	21	2025-05-05	2027-05-05	2000
+202522	22	2025-06-10	2027-06-10	900
+202523	23	2025-07-15	2027-07-15	1100
+202524	24	2025-08-20	2027-08-20	1300
+202525	25	2025-09-25	2027-09-25	1600
+202526	26	2025-10-30	2027-10-30	1400
+202527	27	2025-11-05	2027-11-05	1700
+202528	28	2025-12-10	2027-12-10	1800
+202529	29	2025-01-15	2027-01-15	1900
+202530	30	2025-02-20	2027-02-20	2100
+202531	31	2025-03-25	2027-03-25	2200
+202532	32	2025-04-30	2027-04-30	2300
 \.
 
 
@@ -310,6 +348,22 @@ COPY public.vacina_padronizada (id_vacina, nome_vacina, tipo_vacina, fabricante)
 14	Raiva	Inativada	Verorab
 15	Tétano	Toxoide	BioThrax
 16	Experimental H7N9	Inativada	Butantan
+17	Sarampo	Atenuada	Butantan
+18	Caxumba	Atenuada	Fiocruz
+19	Rubéola	Atenuada	GSK
+20	Meningite B	Recombinante	Bio-Manguinhos
+21	Haemophilus influenzae tipo b (Hib)	Conjugada	Pfizer
+22	Coqueluche	Combinada	Sanofi
+23	Difteria	Combinada	Merck
+24	Tuberculose (BCG)	Atenuada	MSD
+25	Varicela Zoster	Atenuada	Novartis
+26	Dengue	Atenuada	Rotarix
+27	Zika	Inativada	Prevnar
+28	Chikungunya	Inativada	Adacel
+29	Febre Tifoide	Inativada	Havrix
+30	Cólera	Inativada	Verorab
+31	Leishmaniose	Inativada	BioThrax
+32	Peste	Inativada	Butantan
 \.
 
 
@@ -317,7 +371,7 @@ COPY public.vacina_padronizada (id_vacina, nome_vacina, tipo_vacina, fabricante)
 -- Name: historico_vacinacao_id_aplicação_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public."historico_vacinacao_id_aplicação_seq"', 20, true);
+SELECT pg_catalog.setval('public."historico_vacinacao_id_aplicação_seq"', 36, true);
 
 
 --

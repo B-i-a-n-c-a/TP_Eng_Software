@@ -21,6 +21,7 @@ import com.itextpdf.layout.Document;
 import com.itextpdf.layout.element.Table;
 import com.itextpdf.layout.element.Cell;
 import com.itextpdf.layout.element.Paragraph;
+import com.formdev.flatlaf.*;
 
 //Esta classe inicia a interface de usuário e interage com os demais recursos da aplicação
 
@@ -128,6 +129,7 @@ public class GUI extends JFrame {
     private JTextField cadastraUserEmail;
     private JTextField cadastraUserCRM;
     private JPasswordField CadastraUserConfirmaPassword;
+    private JButton botaoAlternaModo;
     private String password;
     private String username;
     private String adminSalt = "adminpbkdf2";
@@ -148,6 +150,8 @@ public class GUI extends JFrame {
     private String IDLote;
     private ResultSet importRS;
     private Funcionario funcionario1 = new Funcionario();
+    private String CPF_TEMP;
+    private boolean modoEscuroAtivo = true;
 
     public GUI() {
         retrieveDatabaseConfig();
@@ -157,26 +161,53 @@ public class GUI extends JFrame {
             JOptionPane.showMessageDialog(null, "Database connection failed: " + g.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
             g.printStackTrace();
         }
+
         setContentPane(background);
         setTitle("Sistema vacinação");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setSize(800, 600);
+        setSize(700, 400);
         setLocationRelativeTo(null);
         setVisible(true);
         SwingUtilities.invokeLater(() -> {
+
             AddressBD.setText(addressDB);
+            AddressBD.setForeground(new Color(50, 150, 50));
             JLabelUserBD.setText(userDB);
-            AddressBD.setForeground(new Color(100, 180, 120));
-            JLabelUserBD.setForeground(new Color(100, 180, 120));
-            cadastraPacienteButton.setBackground(new Color(100, 150, 200));
-            criarVacinaUserButton.setBackground(new Color(100, 150, 200));
-            criarLoteUserButton.setBackground(new Color(100, 150, 200));
-            realizarAplicaçãoButton.setBackground(new Color(100, 150, 200));
-            buscaPacienteButton.setBackground(new Color(100, 180, 120));
-            buscarVacinaButton.setBackground(new Color(100, 180, 120));
-            consultaCartãoPacienteButton.setBackground(new Color(100, 180, 120));
-            queryResultTable.setBackground(new Color(200, 255, 220));
-        });
+            JLabelUserBD.setForeground(new Color(50, 150, 50));
+            vaxSearchID.setForeground(new Color(50, 150, 50));
+            vaxSearchbatch.setForeground(new Color(50, 150, 50));
+            vaxSearchExpire.setForeground(new Color(50, 150, 50));
+            vaxSearchFab.setForeground(new Color(50, 150, 50));
+            vaxSearchName.setForeground(new Color(50, 150, 50));
+            vaxSearchType.setForeground(new Color(50, 150, 50));
+            vaxBatchAmount.setForeground(new Color(50, 150, 50));
+            pacienteNomeLabel.setForeground(new Color(50, 150, 50));
+            pacienteCPFLabel.setForeground(new Color(50, 150, 50));
+            pacienteNascLabel.setForeground(new Color(50, 150, 50));
+            pacienteEmailLabel.setForeground(new Color(50, 150, 50));
+            pacienteSexoLabel.setForeground(new Color(50, 150, 50));
+            pacienteEndereçoLabel.setForeground(new Color(50, 150, 50));
+
+            if (!modoEscuroAtivo) {
+                botaoAlternaModo.setText("Modo Escuro");
+                cadastraPacienteButton.setBackground(new Color(210, 230, 250));
+                criarVacinaUserButton.setBackground(new Color(190, 220, 245));
+                realizarAplicaçãoButton.setBackground(new Color(180, 210, 240));
+                buscaPacienteButton.setBackground(new Color(220, 235, 220));
+                buscarVacinaButton.setBackground(new Color(200, 235, 200));
+                consultaCartãoPacienteButton.setBackground(new Color(180, 235, 180));
+                queryResultTable.setBackground(new Color(220, 220, 220));
+            } else {
+                botaoAlternaModo.setText("Modo Claro");
+                cadastraPacienteButton.setBackground(new Color(50, 70, 90)); // Azul escuro
+                criarVacinaUserButton.setBackground(new Color(60, 80, 100)); // Azul escuro um pouco mais claro
+                realizarAplicaçãoButton.setBackground(new Color(70, 90, 110)); // Azul escuro um pouco mais claro
+                buscaPacienteButton.setBackground(new Color(70, 90, 70)); // Verde escuro
+                buscarVacinaButton.setBackground(new Color(80, 100, 80)); // Verde escuro um pouco mais claro
+                consultaCartãoPacienteButton.setBackground(new Color(90, 110, 90)); // Verde escuro um pouco mais claro
+                queryResultTable.setBackground(new Color(50, 50, 50)); // Cinza escuro
+            }
+            });
 
 
         addWindowListener(new WindowAdapter() {
@@ -302,24 +333,74 @@ public class GUI extends JFrame {
                                 JOptionPane.showMessageDialog(null, "Funcionário registrado com sucesso!", "Sucesso", JOptionPane.INFORMATION_MESSAGE);
                                 cadastra_user.setVisible(false);
                                 admin_Jpanel.setVisible(true);
+                                CadastraUserNome.setText("");
+                                CadastraUserSenha.setText("");
+                                CadastraUserConfirmaPassword.setText("");
+                                cadastraUserEndereco.setText("");
+                                cadastraUserNasc.setText("");
+                                cadastraUserEmail.setText("");
+                                cadastraUserCRM.setText("");
+                                cadastraUserCPF.setText("");
                             }else{
                                 JOptionPane.showMessageDialog(null, "As senhas devem ser iguais!", "Erro", JOptionPane.ERROR_MESSAGE);
+                                CadastraUserSenha.setText("");
+                                CadastraUserConfirmaPassword.setText("");
                             }
                         } catch (SQLException m) {
                             JOptionPane.showMessageDialog(null, m.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
                             m.printStackTrace();
+                            CadastraUserNome.setText("");
+                            CadastraUserSenha.setText("");
+                            CadastraUserConfirmaPassword.setText("");
+                            cadastraUserEndereco.setText("");
+                            cadastraUserNasc.setText("");
+                            cadastraUserEmail.setText("");
+                            cadastraUserCRM.setText("");
+                            cadastraUserCPF.setText("");
                         } catch (NumberFormatException n) {
                             JOptionPane.showMessageDialog(null, "Erro no formato da entrada", "Erro", JOptionPane.ERROR_MESSAGE);
                             n.printStackTrace();
+                            CadastraUserNome.setText("");
+                            CadastraUserSenha.setText("");
+                            CadastraUserConfirmaPassword.setText("");
+                            cadastraUserEndereco.setText("");
+                            cadastraUserNasc.setText("");
+                            cadastraUserEmail.setText("");
+                            cadastraUserCRM.setText("");
+                            cadastraUserCPF.setText("");
                         } catch (IllegalArgumentException h) {
                             JOptionPane.showMessageDialog(null, h.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
                             h.printStackTrace();
+                            CadastraUserNome.setText("");
+                            CadastraUserSenha.setText("");
+                            CadastraUserConfirmaPassword.setText("");
+                            cadastraUserEndereco.setText("");
+                            cadastraUserNasc.setText("");
+                            cadastraUserEmail.setText("");
+                            cadastraUserCRM.setText("");
+                            cadastraUserCPF.setText("");
                         } catch (DateTimeParseException i) {
                             JOptionPane.showMessageDialog(null, i.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
                             i.printStackTrace();
+                            CadastraUserNome.setText("");
+                            CadastraUserSenha.setText("");
+                            CadastraUserConfirmaPassword.setText("");
+                            cadastraUserEndereco.setText("");
+                            cadastraUserNasc.setText("");
+                            cadastraUserEmail.setText("");
+                            cadastraUserCRM.setText("");
+                            cadastraUserCPF.setText("");
                         } catch (Exception ex) {
                             JOptionPane.showMessageDialog(null, "Erro desconhecido" + ex.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
                             ex.printStackTrace();
+                            CadastraUserNome.setText("");
+                            CadastraUserSenha.setText("");
+                            CadastraUserConfirmaPassword.setText("");
+                            cadastraUserEndereco.setText("");
+                            cadastraUserNasc.setText("");
+                            cadastraUserEmail.setText("");
+                            cadastraUserCRM.setText("");
+                            cadastraUserCPF.setText("");
                         }
                     }
                 });
@@ -477,7 +558,6 @@ public class GUI extends JFrame {
                             searchVaxField1.setText("");
                             buscarVacinaUser.setVisible(true);
                             user_Jpanel.setVisible(false);
-
                         }
                     } catch (SQLException m) {
                         JOptionPane.showMessageDialog(null, "Erro ao consultar o banco de dados: " + m.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
@@ -489,6 +569,7 @@ public class GUI extends JFrame {
                         n.printStackTrace();
                     } catch (Exception ex) {
                         JOptionPane.showMessageDialog(null, ex.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
+                        searchVaxField1.setText("");
                         ex.printStackTrace();
                     }
                 });
@@ -590,6 +671,7 @@ public class GUI extends JFrame {
                         n.printStackTrace();
                     } catch (Exception ex) {
                         JOptionPane.showMessageDialog(null, ex.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
+                        searchPacienteField1.setText("");
                         ex.printStackTrace();
                     }
                 });
@@ -671,15 +753,19 @@ public class GUI extends JFrame {
                             searchHistorico();
                             user_Jpanel.setVisible(false);
                             buscaHistorico.setVisible(true);
+                            consultaHistoricoField.setText("");
                         }catch (SQLException ex) {
                             JOptionPane.showMessageDialog(null, "Erro no banco de dados:" + ex.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
                             ex.printStackTrace();
+                            consultaHistoricoField.setText("");
                         }catch (IllegalArgumentException ey){
                             JOptionPane.showMessageDialog(null, ey.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
                             ey.printStackTrace();
+                            consultaHistoricoField.setText("");
                         }catch (Exception ez){
                             JOptionPane.showMessageDialog(null, ez.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
                             ez.printStackTrace();
+                            consultaHistoricoField.setText("");
                         }
                     }
                 });
@@ -698,14 +784,29 @@ public class GUI extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 try {
+                    PreparedStatement statement = connection.prepareStatement("SELECT nome FROM paciente WHERE cpf = ?");
+                    statement.setString(1, CPF_TEMP);
+                    ResultSet rs = statement.executeQuery();
+                    String nome = new String();
+                    if(rs.next()){
+                        nome = rs.getString("nome");
+                    }
                     // Reset the ResultSet
                     importRS.beforeFirst();
                     // Export to PDF
-                    exportResultSetToPdf(importRS, (JFrame) SwingUtilities.getWindowAncestor(buscaHistorico));
+                    exportResultSetToPdf(importRS, (JFrame) SwingUtilities.getWindowAncestor(buscaHistorico), nome);
                 } catch (SQLException ex) {
                     ex.printStackTrace();
                     JOptionPane.showMessageDialog(buscaHistorico, "Error exporting PDF: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
                 }
+            }
+        });
+        botaoAlternaModo.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                SwingUtilities.invokeLater(()-> {
+                    alternarModo();
+                });
             }
         });
     }
@@ -975,14 +1076,14 @@ public class GUI extends JFrame {
     }
 
     public void searchHistorico() throws SQLException, IllegalArgumentException, Exception{
-        String historicoCPF = consultaHistoricoField.getText();
+        CPF_TEMP = consultaHistoricoField.getText();
         pacienteConsultaVacinaNome.setText(consultaHistoricoField.getText());
-        query = "SELECT vacina_padronizada.nome_vacina AS \"Nome da Vacina\", vacina_padronizada.tipo_vacina AS \"Tipo da Vacina\", historico_vacinacao.data_aplicacao AS \"Data de Aplicação\", paciente.nome AS \"Nome do Paciente\" FROM historico_vacinacao JOIN vacina_padronizada ON historico_vacinacao.id_vacina_aplicacao = vacina_padronizada.id_vacina JOIN paciente ON historico_vacinacao.cpf_aplicacao = paciente.cpf WHERE paciente.cpf = ? ORDER BY historico_vacinacao.data_aplicacao DESC";
+        query = "SELECT vacina_padronizada.nome_vacina AS \"Nome da Vacina\", vacina_padronizada.tipo_vacina AS \"Tipo da Vacina\", historico_vacinacao.data_aplicacao AS \"Data de Aplicação\", historico_vacinacao.nome_funcionario AS \"Profissional Responsável\" FROM historico_vacinacao JOIN vacina_padronizada ON historico_vacinacao.id_vacina_aplicacao = vacina_padronizada.id_vacina JOIN paciente ON historico_vacinacao.cpf_aplicacao = paciente.cpf WHERE paciente.cpf = ? AND historico_vacinacao.nome_funcionario IS NOT NULL ORDER BY historico_vacinacao.data_aplicacao DESC";
         PreparedStatement ps = connection.prepareStatement(query, ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
-        ps.setString(1, historicoCPF);
+        ps.setString(1, CPF_TEMP);
         importRS = ps.executeQuery();
         if (!importRS.isBeforeFirst()) {
-            throw new Exception("Paciente não encontrado com o CPF: " + historicoCPF);
+            throw new Exception("Paciente não encontrado com o CPF: " + CPF_TEMP);
         }else{
             resultSetToTableModel(importRS, queryResultTable);
         }
@@ -1133,7 +1234,7 @@ public class GUI extends JFrame {
     }
 
 
-    public static void exportResultSetToPdf(ResultSet resultSet, JFrame parentFrame) {
+    public static void exportResultSetToPdf(ResultSet resultSet, JFrame parentFrame, String nome_paciente) {
         JFileChooser fileChooser = new JFileChooser();
         fileChooser.setDialogTitle("Save PDF");
         FileNameExtensionFilter filter = new FileNameExtensionFilter("PDF files (*.pdf)", "pdf");
@@ -1154,6 +1255,10 @@ public class GUI extends JFrame {
                 PdfWriter writer = new PdfWriter(filePath);
                 PdfDocument pdf = new PdfDocument(writer);
                 Document document = new Document(pdf);
+
+                String headerText = "Olá, " + nome_paciente + "! Este é seu histórico de vacinação.";
+                document.add(new Paragraph(headerText));
+
 
                 ResultSetMetaData metaData = resultSet.getMetaData();
                 int columnCount = metaData.getColumnCount();
@@ -1183,7 +1288,42 @@ public class GUI extends JFrame {
         }
     }
 
+    private void alternarModo() {
+        try {
+            if (modoEscuroAtivo) {
+                UIManager.setLookAndFeel(new FlatIntelliJLaf());
+                botaoAlternaModo.setText("Modo Escuro");
+                cadastraPacienteButton.setBackground(new Color(210, 230, 250));
+                criarVacinaUserButton.setBackground(new Color(190, 220, 245));
+                realizarAplicaçãoButton.setBackground(new Color(180, 210, 240));
+                buscaPacienteButton.setBackground(new Color(220, 235, 220));
+                buscarVacinaButton.setBackground(new Color(200, 235, 200));
+                consultaCartãoPacienteButton.setBackground(new Color(180, 235, 180));
+                queryResultTable.setBackground(new Color(220, 220, 220));
+            } else {
+                UIManager.setLookAndFeel(new FlatDarkLaf());
+                botaoAlternaModo.setText("Modo Claro");
+                cadastraPacienteButton.setBackground(new Color(50, 70, 90)); // Azul escuro
+                criarVacinaUserButton.setBackground(new Color(60, 80, 100)); // Azul escuro um pouco mais claro
+                realizarAplicaçãoButton.setBackground(new Color(70, 90, 110)); // Azul escuro um pouco mais claro
+                buscaPacienteButton.setBackground(new Color(70, 90, 70)); // Verde escuro
+                buscarVacinaButton.setBackground(new Color(80, 100, 80)); // Verde escuro um pouco mais claro
+                consultaCartãoPacienteButton.setBackground(new Color(90, 110, 90)); // Verde escuro um pouco mais claro
+                queryResultTable.setBackground(new Color(50, 50, 50)); // Cinza escuro
+            }
+            modoEscuroAtivo = !modoEscuroAtivo;
+            SwingUtilities.updateComponentTreeUI(this);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+    }
+
     public static void main(String[] args) {
+        try {
+            UIManager.setLookAndFeel(new FlatDarkLaf());
+        }catch (Exception e) {
+            e.printStackTrace();
+        }
         new GUI();
     }
 }
