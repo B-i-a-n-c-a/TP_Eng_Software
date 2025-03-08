@@ -284,12 +284,21 @@ public class GUI extends JFrame {
                         adminDBconfigLabel1.setForeground(Color.RED);
                     });
                 }else{
-                    adminDBconfigLabel1.setText("Insira abaixo novas configurações do Banco de dados:");
-                    SwingUtilities.invokeLater(() -> {
-                                adminDBconfigLabel1.setForeground(Color.BLACK);
-                                adminConfigChangeDB.setVisible(false);
-                                landing_Jpanel.setVisible(true);
-                            });
+                    if (connection != null) {
+                        try {
+                            connection.close();
+                            System.out.println("\nDatabase connection closed.");
+                        } catch (SQLException ex) {
+                            System.err.println("Error closing database connection: " + ex.getMessage());
+                            JOptionPane.showMessageDialog(null, "Error closing database connection.", "Error", JOptionPane.ERROR_MESSAGE);
+                            ex.printStackTrace(); // Log the exception for debugging
+                        }
+                    } else {
+                        System.out.println("Database connection was null.");
+                    }
+                    System.out.println("Exiting the application...");
+                    System.out.flush();
+                    System.exit(0);
                     setUserDB();
                     setPasswordDB();
                     setPathDB();
