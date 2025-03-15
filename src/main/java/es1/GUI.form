@@ -637,7 +637,7 @@
           </component>
         </children>
       </grid>
-      <grid id="c5726" binding="adminConfigChangeDB" layout-manager="GridLayoutManager" row-count="14" column-count="4" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+      <grid id="c5726" binding="adminConfigChangeDB" layout-manager="GridLayoutManager" row-count="15" column-count="4" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
         <margin top="0" left="0" bottom="0" right="0"/>
         <constraints>
           <card name="Card9"/>
@@ -655,7 +655,7 @@
           </component>
           <vspacer id="9cd3e">
             <constraints>
-              <grid row="13" column="2" row-span="1" col-span="1" vsize-policy="6" hsize-policy="1" anchor="0" fill="2" indent="0" use-parent-layout="false"/>
+              <grid row="14" column="2" row-span="1" col-span="1" vsize-policy="6" hsize-policy="1" anchor="0" fill="2" indent="0" use-parent-layout="false"/>
             </constraints>
           </vspacer>
           <component id="43b71" class="javax.swing.JPasswordField" binding="newDBpassword">
@@ -710,7 +710,7 @@
           </hspacer>
           <component id="47964" class="javax.swing.JButton" binding="confirmaMudançasButton" default-binding="true">
             <constraints>
-              <grid row="11" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+              <grid row="12" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
             </constraints>
             <properties>
               <text value="Confirma mudanças (Você será deslogado(a))"/>
@@ -723,7 +723,7 @@
           </hspacer>
           <component id="376b9" class="javax.swing.JButton" binding="sairAdminConfigButton">
             <constraints>
-              <grid row="12" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+              <grid row="13" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
             </constraints>
             <properties>
               <text value="Sair"/>
@@ -739,7 +739,7 @@
           </component>
           <component id="66d3e" class="javax.swing.JButton" binding="testarConexãoAdminConfigButton">
             <constraints>
-              <grid row="10" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+              <grid row="11" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
             </constraints>
             <properties>
               <text value="Testar conexão"/>
@@ -796,6 +796,14 @@
             </constraints>
             <properties>
               <text value="Alternar modo"/>
+            </properties>
+          </component>
+          <component id="c6aa2" class="javax.swing.JLabel">
+            <constraints>
+              <grid row="10" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+            </constraints>
+            <properties>
+              <text value="Formato do endereço: &lt;endereco&gt;:&lt;porta&gt;"/>
             </properties>
           </component>
         </children>

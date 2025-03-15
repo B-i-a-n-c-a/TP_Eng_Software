@@ -214,7 +214,11 @@ public class GUI extends JFrame {
         addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent e) {
-                closeConnection(); // Fecha conexão quando a janela da aplicação encerra
+                if(connection != null){
+                    closeConnection(); // Fecha conexão quando a janela da aplicação encerra
+                }else{
+                    System.out.println("Connection is null");
+                }
             }
         });
 
@@ -284,6 +288,11 @@ public class GUI extends JFrame {
                         adminDBconfigLabel1.setForeground(Color.RED);
                     });
                 }else{
+                    setUserDB();
+                    setPasswordDB();
+                    setPathDB();
+                    storeDatabaseConfig(addressDB, userDB, passwordDB);
+                    System.out.println(addressDB);
                     if (connection != null) {
                         try {
                             connection.close();
@@ -299,10 +308,7 @@ public class GUI extends JFrame {
                     System.out.println("Exiting the application...");
                     System.out.flush();
                     System.exit(0);
-                    setUserDB();
-                    setPasswordDB();
-                    setPathDB();
-                    storeDatabaseConfig(addressDB, userDB, passwordDB);
+
                 }
             }
         });
@@ -955,18 +961,9 @@ public class GUI extends JFrame {
         config.put("user", user);
         config.put("password", password);
 
-        // Ensure the file exists
         File file = new File(fileRootDir);
-        if (!file.exists()) {
-            try {
-                file.createNewFile(); // Create the file if it doesn't exist
-            } catch (IOException e) {
-                System.err.println("Failed to create file: " + e.getMessage());
-                return;
-            }
-        }
 
-        // Write the configuration to the file
+        // Write the configuration to the file, overwriting if it exists.
         try (FileOutputStream fileOut = new FileOutputStream(file);
              ObjectOutputStream objectOut = new ObjectOutputStream(fileOut)) {
             objectOut.writeObject(config); // Write the map to the file
@@ -989,7 +986,7 @@ public class GUI extends JFrame {
              ObjectInputStream objectIn = new ObjectInputStream(fileIn)) {
             Map<String, String> config = (Map<String, String>) objectIn.readObject(); // Read the map from the file
             System.out.println("Database configuration loaded from " + file.getAbsolutePath());
-            this.addressDB= config.get("address");
+            this.addressDB= ("jdbc:postgresql://" + config.get("address") + "/postgres");
             this.userDB = config.get("user");
             this.passwordDB = config.get("password");
             System.out.println("Database Address: " + config.get("address"));
