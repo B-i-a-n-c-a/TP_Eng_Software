@@ -27,7 +27,7 @@ import com.formdev.flatlaf.*;
 //Esta classe inicia a interface de usuário e interage com os demais recursos da aplicação
 
 public class GUI extends JFrame {
-    String fileRootDir = System.getProperty("user.dir") + File.separator + "database_config.bin";
+    String fileRootDir;
     private JButton loginButton;
     private JPasswordField passwordField1;
     private JTextField textField1;
@@ -131,6 +131,7 @@ public class GUI extends JFrame {
     private JTextField cadastraUserCRM;
     private JPasswordField CadastraUserConfirmaPassword;
     private JButton botaoAlternaModo;
+    private JLabel warningUser;
     private String password;
     private String username;
     private String adminSalt = "adminpbkdf2";
@@ -155,6 +156,10 @@ public class GUI extends JFrame {
     private boolean modoEscuroAtivo = true;
 
     public GUI() {
+        SwingUtilities.invokeLater(() -> {
+            warningUser.setText("");
+        });
+        DatabaseConfigManager();
         retrieveDatabaseConfig();
         try {
             makeConnection(addressDB, userDB, passwordDB);
@@ -170,7 +175,6 @@ public class GUI extends JFrame {
         setLocationRelativeTo(null);
         setVisible(true);
         SwingUtilities.invokeLater(() -> {
-
             AddressBD.setText(addressDB);
             AddressBD.setForeground(new Color(50, 150, 50));
             JLabelUserBD.setText(userDB);
@@ -955,6 +959,15 @@ public class GUI extends JFrame {
         }
     }
 
+    public void DatabaseConfigManager() {
+        String os = System.getProperty("os.name").toLowerCase();
+        if (os.contains("win")) {
+            fileRootDir = System.getenv("APPDATA") + "/SysVac/temp/database_config.bin";
+        } else {
+            fileRootDir = System.getProperty("user.home") + "/.SysVac/temp/database_config.bin";
+        }
+    }
+
     public void storeDatabaseConfig(String address, String user, String password) {
         Map<String, String> config = new HashMap<>();
         config.put("address", address);
@@ -962,6 +975,10 @@ public class GUI extends JFrame {
         config.put("password", password);
 
         File file = new File(fileRootDir);
+        File parentDir = file.getParentFile();
+        if(parentDir != null && !parentDir.exists()){
+            parentDir.mkdirs();
+        }
 
         // Write the configuration to the file, overwriting if it exists.
         try (FileOutputStream fileOut = new FileOutputStream(file);
@@ -978,7 +995,18 @@ public class GUI extends JFrame {
 
         // Check if the file exists
         if (!file.exists()) {
+            JOptionPane.showMessageDialog(null, "Configuração falhou. Mudando para configuração default", "Error", JOptionPane.WARNING_MESSAGE);
+            warningUser.setText("Apenas consultas são permitidas no momento");
+            warningUser.setForeground(Color.RED);
             System.err.println("Configuration file not found: " + file.getAbsolutePath());
+            this.addressDB = "jdbc:postgresql://localhost:5432/postgres";
+            this.userDB = "defaultexception";
+            this.passwordDB = "12345";
+            System.out.println("Using Default Credentials");
+            System.out.println("Database Address: localhost:5432");
+            System.out.println("Database User: defaultexception");
+            System.out.println("Database Password: 12345");
+            return;
         }
 
         // Read the configuration from the file
@@ -986,7 +1014,7 @@ public class GUI extends JFrame {
              ObjectInputStream objectIn = new ObjectInputStream(fileIn)) {
             Map<String, String> config = (Map<String, String>) objectIn.readObject(); // Read the map from the file
             System.out.println("Database configuration loaded from " + file.getAbsolutePath());
-            this.addressDB= ("jdbc:postgresql://" + config.get("address") + "/postgres");
+            this.addressDB = ("jdbc:postgresql://" + config.get("address") + "/postgres");
             this.userDB = config.get("user");
             this.passwordDB = config.get("password");
             System.out.println("Database Address: " + config.get("address"));
@@ -994,7 +1022,15 @@ public class GUI extends JFrame {
             System.out.println("Database Password: " + config.get("password"));
 
         } catch (IOException | ClassNotFoundException e) {
+            JOptionPane.showMessageDialog(null, "Configuração falhou. Mudando para configuração default", "Error", JOptionPane.ERROR_MESSAGE);
             System.err.println("Failed to retrieve database configuration: " + e.getMessage());
+            this.addressDB = "jdbc:postgresql://localhost:5432/postgres";
+            this.userDB = "defaultexception";
+            this.passwordDB = "12345";
+            System.out.println("Using Default Credentials");
+            System.out.println("Database Address: localhost:5432");
+            System.out.println("Database User: defaultexception");
+            System.out.println("Database Password: 12345");
         }
 
     }
