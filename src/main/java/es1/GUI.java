@@ -1,8 +1,22 @@
 package es1;
+
+import com.itextpdf.kernel.colors.ColorConstants;
+import com.itextpdf.kernel.pdf.PdfDocument;
+import com.itextpdf.kernel.pdf.PdfWriter;
+import com.itextpdf.layout.Document;
+import com.itextpdf.layout.properties.TextAlignment;
+import com.itextpdf.layout.properties.UnitValue;
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
-import javax.swing.table.DefaultTableModel;
 import java.awt.*;
+import java.io.File;
+import java.io.IOException;
+import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
+import java.sql.SQLException;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import javax.swing.table.DefaultTableModel;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
@@ -14,11 +28,6 @@ import java.sql.*;
 import java.sql.Date;
 import java.time.format.DateTimeParseException;
 import java.util.*;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import com.itextpdf.kernel.pdf.PdfDocument;
-import com.itextpdf.kernel.pdf.PdfWriter;
-import com.itextpdf.layout.Document;
 import com.itextpdf.layout.element.Table;
 import com.itextpdf.layout.element.Cell;
 import com.itextpdf.layout.element.Paragraph;
@@ -1292,57 +1301,95 @@ public class GUI extends JFrame {
     }
 
 
+    public void resultSetToTableModel(ResultSet rs, JTable table) throws SQLException{
+
+        DefaultTableModel tableModel = new DefaultTableModel();
+        ResultSetMetaData metaData = rs.getMetaData();
+        int columnCount = metaData.getColumnCount();
+        for (int columnIndex = 1; columnIndex <= columnCount; columnIndex++){
+            tableModel.addColumn(metaData.getColumnLabel(columnIndex));
+        }
+        Object[] row = new Object[columnCount];
+        while (rs.next()){
+            for (int i = 0; i < columnCount; i++){
+                row[i] = rs.getObject(i+1);
+            }
+            tableModel.addRow(row);
+        }
+        table.setModel(tableModel);
+    }
+
+
     public static void exportResultSetToPdf(ResultSet resultSet, JFrame parentFrame, String nome_paciente) {
         JFileChooser fileChooser = new JFileChooser();
-        fileChooser.setDialogTitle("Save PDF");
-        FileNameExtensionFilter filter = new FileNameExtensionFilter("PDF files (*.pdf)", "pdf");
-        fileChooser.setFileFilter(filter);
+        fileChooser.setDialogTitle("Salvar PDF");
+        fileChooser.setFileFilter(new FileNameExtensionFilter("PDF files (*.pdf)", "pdf"));
 
         int userSelection = fileChooser.showSaveDialog(parentFrame);
+        if (userSelection != JFileChooser.APPROVE_OPTION) return;
 
-        if (userSelection == JFileChooser.APPROVE_OPTION) {
-            File fileToSave = fileChooser.getSelectedFile();
-            String filePath = fileToSave.getAbsolutePath();
+        File fileToSave = fileChooser.getSelectedFile();
+        String filePath = fileToSave.getAbsolutePath();
+        if (!filePath.toLowerCase().endsWith(".pdf")) filePath += ".pdf";
 
-            // Append .pdf extension if not already present
-            if (!filePath.toLowerCase().endsWith(".pdf")) {
-                filePath += ".pdf";
+        try {
+            PdfWriter writer = new PdfWriter(filePath);
+            PdfDocument pdf = new PdfDocument(writer);
+            Document document = new Document(pdf);
+
+            // Cabeçalho estilizado
+            Paragraph title = new Paragraph("CARTÃO DE VACINAÇÃO")
+                    .setBold()
+                    .setFontSize(16)
+                    .setTextAlignment(TextAlignment.CENTER)
+                    .setMarginBottom(10);
+
+            Paragraph patientInfo = new Paragraph("Nome: " + nome_paciente)
+                    .setFontSize(12)
+                    .setMarginBottom(10);
+
+            document.add(title);
+            document.add(patientInfo);
+
+            // Criando tabela
+            ResultSetMetaData metaData = resultSet.getMetaData();
+            int columnCount = metaData.getColumnCount();
+            Table table = new Table(UnitValue.createPercentArray(columnCount)).useAllAvailableWidth();
+
+            // Adicionando cabeçalhos da tabela
+            for (int i = 1; i <= columnCount; i++) {
+                Cell headerCell = new Cell()
+                        .add(new Paragraph(metaData.getColumnLabel(i)).setBold())
+                        .setBackgroundColor(ColorConstants.LIGHT_GRAY)
+                        .setTextAlignment(TextAlignment.CENTER);
+                table.addHeaderCell(headerCell);
             }
 
-            try {
-                PdfWriter writer = new PdfWriter(filePath);
-                PdfDocument pdf = new PdfDocument(writer);
-                Document document = new Document(pdf);
-
-                String headerText = "Olá, " + nome_paciente + "! Este é seu histórico de vacinação.";
-                document.add(new Paragraph(headerText));
-
-
-                ResultSetMetaData metaData = resultSet.getMetaData();
-                int columnCount = metaData.getColumnCount();
-
-                Table table = new Table(columnCount);
-
-                // Add header
+            // Adicionando dados à tabela
+            while (resultSet.next()) {
                 for (int i = 1; i <= columnCount; i++) {
-                    table.addCell(new Cell().add(new Paragraph(metaData.getColumnLabel(i)))); // Wrap in Paragraph
+                    Cell cell = new Cell()
+                            .add(new Paragraph(resultSet.getString(i)))
+                            .setTextAlignment(TextAlignment.CENTER);
+                    table.addCell(cell);
                 }
-
-                // Add data
-                while (resultSet.next()) {
-                    for (int i = 1; i <= columnCount; i++) {
-                        table.addCell(new Cell().add(new Paragraph(resultSet.getString(i)))); // Wrap in Paragraph
-                    }
-                }
-
-                document.add(table);
-                document.close();
-                JOptionPane.showMessageDialog(parentFrame, "PDF exported successfully!");
-
-            } catch (IOException | SQLException e) {
-                JOptionPane.showMessageDialog(parentFrame, "Error exporting PDF: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
-                e.printStackTrace();
             }
+
+            document.add(table);
+
+            // Adicionando rodapé
+            String dataAtual = LocalDate.now().format(DateTimeFormatter.ofPattern("dd/MM/yyyy"));
+            Paragraph footer = new Paragraph("Relatório gerado em: " + dataAtual)
+                    .setFontSize(10)
+                    .setTextAlignment(TextAlignment.RIGHT)
+                    .setMarginTop(20);
+            document.add(footer);
+
+            document.close();
+            JOptionPane.showMessageDialog(parentFrame, "PDF exportado com sucesso!", "Sucesso", JOptionPane.INFORMATION_MESSAGE);
+        } catch (IOException | SQLException e) {
+            JOptionPane.showMessageDialog(parentFrame, "Erro ao exportar PDF: " + e.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
+            e.printStackTrace();
         }
     }
 
