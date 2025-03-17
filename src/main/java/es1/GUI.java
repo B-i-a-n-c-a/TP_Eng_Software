@@ -15,6 +15,7 @@ import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.time.LocalDate;
+import java.time.Period;
 import java.time.format.DateTimeFormatter;
 import javax.swing.table.DefaultTableModel;
 import java.awt.event.ActionEvent;
@@ -821,17 +822,19 @@ public class GUI extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 try {
-                    PreparedStatement statement = connection.prepareStatement("SELECT nome FROM paciente WHERE cpf = ?");
+                    PreparedStatement statement = connection.prepareStatement("SELECT nome, data_nasc FROM paciente WHERE cpf = ?");
                     statement.setString(1, CPF_TEMP);
                     ResultSet rs = statement.executeQuery();
                     String nome = new String();
+                    Date datanasc = null;
                     if(rs.next()){
                         nome = rs.getString("nome");
+                        datanasc = rs.getDate("data_nasc");
                     }
                     // Reset the ResultSet
                     importRS.beforeFirst();
                     // Export to PDF
-                    exportResultSetToPdf(importRS, (JFrame) SwingUtilities.getWindowAncestor(buscaHistorico), nome);
+                    exportResultSetToPdf(importRS, (JFrame) SwingUtilities.getWindowAncestor(buscaHistorico), nome, datanasc);
                 } catch (SQLException ex) {
                     ex.printStackTrace();
                     JOptionPane.showMessageDialog(buscaHistorico, "Erro ao exportar o PDF: " + ex.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
@@ -1274,7 +1277,7 @@ public class GUI extends JFrame {
         table.setModel(tableModel);
     }
 
-    public static void exportResultSetToPdf(ResultSet resultSet, JFrame parentFrame, String nome_paciente) {
+    public static void exportResultSetToPdf(ResultSet resultSet, JFrame parentFrame, String nome_paciente, Date nasc_pacinte) {
         JFileChooser fileChooser = new JFileChooser();
         fileChooser.setDialogTitle("Salvar PDF");
         fileChooser.setFileFilter(new FileNameExtensionFilter("PDF files (*.pdf)", "pdf"));
@@ -1330,15 +1333,33 @@ public class GUI extends JFrame {
             }
 
             document.add(table);
+            try {
+                int idade = calcularIdade(nasc_pacinte);
+                if (idade < 1) {
+                    Paragraph vacbebe = new Paragraph("Vacinas recomendadas: BCG, Hepatite B, Penta, VIP, Rotavírus, Pneumocócica 10-valente, Meningocócica C, Febre amarela (se aplicável).");
+                    document.add(vacbebe);
+                } else if (idade >= 1 && idade <= 9) {
+                    Paragraph vaccrianca = new Paragraph("Vacinas recomendadas: Tríplice viral, Varicela, DTPa, VIP, HPV (a partir de 9 anos), Meningocócica ACWY (a partir de 11 anos).");
+                    document.add(vaccrianca);
+                } else if (idade >= 10 && idade <= 19) {
+                    Paragraph adolescente = new Paragraph("Vacinas recomendadas: HPV, dTpa, Meningocócica ACWY.");
+                    document.add(adolescente);
+                } else if (idade >= 20 && idade <= 59) {
+                    Paragraph adulto = new Paragraph("Vacinas recomendadas: Hepatite B (se não vacinado), Tríplice viral (se não vacinado), Febre amarela (se aplicável), dT, HPV (mulheres até 45 anos, homens até 26 anos), Gripe.");
+                    document.add(adulto);
+                } else if (idade >= 60) {
+                    Paragraph idoso = new Paragraph("Vacinas recomendadas: Gripe, Pneumocócica 23-valente, dT, Herpes zóster, Covid-19.");
+                    document.add(idoso);
+                }
+            }catch (IllegalArgumentException e){
+            }
 
-            // Adicionando rodapé
             String dataAtual = LocalDate.now().format(DateTimeFormatter.ofPattern("dd/MM/yyyy"));
             Paragraph footer = new Paragraph("Relatório gerado em: " + dataAtual)
                     .setFontSize(10)
                     .setTextAlignment(TextAlignment.RIGHT)
                     .setMarginTop(20);
             document.add(footer);
-
             document.close();
             JOptionPane.showMessageDialog(parentFrame, "PDF exportado com sucesso!", "Sucesso", JOptionPane.INFORMATION_MESSAGE);
         } catch (IOException | SQLException e) {
@@ -1375,6 +1396,18 @@ public class GUI extends JFrame {
         } catch (Exception ex) {
             ex.printStackTrace();
         }
+    }
+
+    public static int calcularIdade(Date dataNascimento) {
+        if (dataNascimento == null) {
+            throw new IllegalArgumentException("A data de nascimento não pode ser nula.");
+        }
+
+        LocalDate dataNascimentoLocal = dataNascimento.toLocalDate();
+        LocalDate dataAtual = LocalDate.now();
+
+        Period periodo = Period.between(dataNascimentoLocal, dataAtual);
+        return periodo.getYears();
     }
 
     public static void main(String[] args) {
