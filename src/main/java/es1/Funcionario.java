@@ -22,11 +22,4 @@ public class Funcionario extends Pessoa{
         this.crm_coren = crm_coren;
     }
 
-    public String getCrm_coren() {
-        return crm_coren;
-    }
-    public void setCrm_coren(String crm_coren) {
-        this.crm_coren = crm_coren;
-    }
-
 }

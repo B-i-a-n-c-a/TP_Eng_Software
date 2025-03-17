@@ -37,7 +37,5 @@ public class Gestão_Vacinas {
         JOptionPane.showMessageDialog(null, vacina.nome_vacina + " registrada com sucesso");
     }
 
-    public static void test(){
-        System.out.println("Isto é um teste");
-    }
+
 }

@@ -52,17 +52,4 @@ public final class Crypto {
         return Base64.getEncoder().encodeToString(salt);
     }
 
-
-    // Example of how to use this function
-    public static void testHash() {
-        // Sample password and salt
-        String password = "mySecretPassword";
-        String salt = "mySaltValue";
-
-        // Hash the password
-        String hashedPassword = pbkdf2Hash(password, salt);
-
-        // Output the result
-        System.out.println("Hashed password: " + hashedPassword);
-    }
 }

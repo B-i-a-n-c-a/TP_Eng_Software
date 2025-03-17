@@ -173,7 +173,7 @@ public class GUI extends JFrame {
         try {
             makeConnection(addressDB, userDB, passwordDB);
         } catch (SQLException g) {
-            JOptionPane.showMessageDialog(null, "Database connection failed: " + g.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(null, "Erro ao finalizar conexão: " + g.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
             g.printStackTrace();
         }
 
@@ -263,16 +263,13 @@ public class GUI extends JFrame {
                 if (connection != null) {
                     try {
                         connection.close();
-                        System.out.println("\nDatabase connection closed.");
                     } catch (SQLException ex) {
-                        System.err.println("Error closing database connection: " + ex.getMessage());
-                        JOptionPane.showMessageDialog(null, "Error closing database connection.", "Error", JOptionPane.ERROR_MESSAGE);
+                        JOptionPane.showMessageDialog(null, "Erro ao finalizar conexão.", "Erro", JOptionPane.ERROR_MESSAGE);
                         ex.printStackTrace(); // Log the exception for debugging
                     }
                 } else {
                     System.out.println("Database connection was null.");
                 }
-                System.out.println("Exiting the application...");
                 System.out.flush();
                 System.exit(0);
             }
@@ -305,20 +302,17 @@ public class GUI extends JFrame {
                     setPasswordDB();
                     setPathDB();
                     storeDatabaseConfig(addressDB, userDB, passwordDB);
-                    System.out.println(addressDB);
                     if (connection != null) {
                         try {
                             connection.close();
-                            System.out.println("\nDatabase connection closed.");
                         } catch (SQLException ex) {
                             System.err.println("Error closing database connection: " + ex.getMessage());
-                            JOptionPane.showMessageDialog(null, "Error closing database connection.", "Error", JOptionPane.ERROR_MESSAGE);
+                            JOptionPane.showMessageDialog(null, "Erro ao finalizar conexão.", "Erro", JOptionPane.ERROR_MESSAGE);
                             ex.printStackTrace(); // Log the exception for debugging
                         }
                     } else {
                         System.out.println("Database connection was null.");
                     }
-                    System.out.println("Exiting the application...");
                     System.out.flush();
                     System.exit(0);
 
@@ -398,7 +392,7 @@ public class GUI extends JFrame {
                             cadastraUserCRM.setText("");
                             cadastraUserCPF.setText("");
                         } catch (IllegalArgumentException h) {
-                            JOptionPane.showMessageDialog(null, h.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+                            JOptionPane.showMessageDialog(null, h.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
                             h.printStackTrace();
                             CadastraUserNome.setText("");
                             CadastraUserSenha.setText("");
@@ -409,7 +403,7 @@ public class GUI extends JFrame {
                             cadastraUserCRM.setText("");
                             cadastraUserCPF.setText("");
                         } catch (DateTimeParseException i) {
-                            JOptionPane.showMessageDialog(null, i.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+                            JOptionPane.showMessageDialog(null, i.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
                             i.printStackTrace();
                             CadastraUserNome.setText("");
                             CadastraUserSenha.setText("");
@@ -500,9 +494,9 @@ public class GUI extends JFrame {
             public void actionPerformed(ActionEvent e) {
                 try {
                     makeConnection(addressDB, userDB, passwordDB);
-                    JOptionPane.showMessageDialog(null, "Database connection succeeded","Success", JOptionPane.PLAIN_MESSAGE);
+                    JOptionPane.showMessageDialog(null, "Conexão bem-sucedida","Atenção", JOptionPane.PLAIN_MESSAGE);
                 } catch (SQLException g) {
-                    JOptionPane.showMessageDialog(null, "Database connection failed: " + g.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(null, "Erro ao finalizar conexão: " + g.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
                     g.printStackTrace();
                 }
             }
@@ -575,13 +569,13 @@ public class GUI extends JFrame {
                             l.printStackTrace();
                         }
                     } catch (NumberFormatException g) {
-                        JOptionPane.showMessageDialog(null, g.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+                        JOptionPane.showMessageDialog(null, g.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
                         g.printStackTrace(); // Optional: Print stack trace for debugging
                     } catch (IllegalArgumentException h) {
-                        JOptionPane.showMessageDialog(null, h.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+                        JOptionPane.showMessageDialog(null, h.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
                         h.printStackTrace();
                     } catch (DateTimeParseException i) {
-                        JOptionPane.showMessageDialog(null, i.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+                        JOptionPane.showMessageDialog(null, i.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
                         i.printStackTrace();
                     }
                 }
@@ -668,10 +662,10 @@ public class GUI extends JFrame {
                         SwingUtilities.invokeLater(() -> { searchPacienteField1.setText(""); });
                         n.printStackTrace();
                     } catch (IllegalArgumentException h) {
-                        JOptionPane.showMessageDialog(null, h.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+                        JOptionPane.showMessageDialog(null, h.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
                         h.printStackTrace();
                     } catch (DateTimeParseException i) {
-                        JOptionPane.showMessageDialog(null, i.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+                        JOptionPane.showMessageDialog(null, i.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
                         i.printStackTrace();
                     } catch (Exception ex) {
                         JOptionPane.showMessageDialog(null, "Erro desconhecido" + ex.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
@@ -840,7 +834,7 @@ public class GUI extends JFrame {
                     exportResultSetToPdf(importRS, (JFrame) SwingUtilities.getWindowAncestor(buscaHistorico), nome);
                 } catch (SQLException ex) {
                     ex.printStackTrace();
-                    JOptionPane.showMessageDialog(buscaHistorico, "Error exporting PDF: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(buscaHistorico, "Erro ao exportar o PDF: " + ex.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
                 }
             }
         });
@@ -932,7 +926,6 @@ public class GUI extends JFrame {
 
                 if (rs.next()) { // Check if a row was returned
                     String passwordHashFromDB = rs.getString("password"); // Use column names
-                    //System.out.println(passwordHashFromDB);
                     String salt = rs.getString("salt");
 
                     if (salt != null) { // Handle the case where the salt is null
@@ -945,16 +938,16 @@ public class GUI extends JFrame {
                             });
                         } else {
                             // Incorrect password - provide feedback to the user
-                            JOptionPane.showMessageDialog(null, "Incorrect password.", "Error", JOptionPane.ERROR_MESSAGE);
+                            JOptionPane.showMessageDialog(null, "Senha incorreta.", "Erro", JOptionPane.ERROR_MESSAGE);
                         }
                     } else {
                         // Handle the case where the user doesn't have a salt in the database.
-                        JOptionPane.showMessageDialog(null, "User record is missing salt.", "Error", JOptionPane.ERROR_MESSAGE);
+                        JOptionPane.showMessageDialog(null, "Ocorreu um erro ao recuperar a senha da base de dados.", "Erro", JOptionPane.ERROR_MESSAGE);
                     }
 
                 } else {
                     // User not found - provide feedback to the user
-                    JOptionPane.showMessageDialog(null, "User not found.", "Error", JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(null, "Usuário não encontrado.", "Erro", JOptionPane.ERROR_MESSAGE);
                 }
 
                 rs.close(); // Close the ResultSet
@@ -962,9 +955,8 @@ public class GUI extends JFrame {
 
             } catch (SQLException f) {
                 f.printStackTrace();
-                JOptionPane.showMessageDialog(null, "Database error: " + f.getMessage(), "Error", JOptionPane.ERROR_MESSAGE); // Inform user of database error
+                JOptionPane.showMessageDialog(null, "Erro na base de dados: " + f.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE); // Inform user of database error
             }
-            //Gestão_Vacinas.test();
         }
     }
 
@@ -993,9 +985,9 @@ public class GUI extends JFrame {
         try (FileOutputStream fileOut = new FileOutputStream(file);
              ObjectOutputStream objectOut = new ObjectOutputStream(fileOut)) {
             objectOut.writeObject(config); // Write the map to the file
-            System.out.println("Database configuration saved to " + file.getAbsolutePath());
+            JOptionPane.showMessageDialog(null, "Configuração da base de dados salva em: " + file.getAbsolutePath(), "Atenção", JOptionPane.WARNING_MESSAGE);
         } catch (IOException e) {
-            System.err.println("Failed to save database configuration: " + e.getMessage());
+            JOptionPane.showMessageDialog(null, "Configuração da base de dados falhou !", "Atenção", JOptionPane.ERROR_MESSAGE);
         }
     }
 
@@ -1007,14 +999,9 @@ public class GUI extends JFrame {
             JOptionPane.showMessageDialog(null, "Configuração falhou. Mudando para configuração default", "Error", JOptionPane.WARNING_MESSAGE);
             warningUser.setText("Apenas consultas são permitidas no momento");
             warningUser.setForeground(Color.RED);
-            System.err.println("Configuration file not found: " + file.getAbsolutePath());
             this.addressDB = "jdbc:postgresql://localhost:5432/postgres";
             this.userDB = "defaultexception";
             this.passwordDB = "12345";
-            System.out.println("Using Default Credentials");
-            System.out.println("Database Address: localhost:5432");
-            System.out.println("Database User: defaultexception");
-            System.out.println("Database Password: 12345");
             return;
         }
 
@@ -1022,24 +1009,15 @@ public class GUI extends JFrame {
         try (FileInputStream fileIn = new FileInputStream(file);
              ObjectInputStream objectIn = new ObjectInputStream(fileIn)) {
             Map<String, String> config = (Map<String, String>) objectIn.readObject(); // Read the map from the file
-            System.out.println("Database configuration loaded from " + file.getAbsolutePath());
             this.addressDB = ("jdbc:postgresql://" + config.get("address") + "/postgres");
             this.userDB = config.get("user");
             this.passwordDB = config.get("password");
-            System.out.println("Database Address: " + config.get("address"));
-            System.out.println("Database User: " + config.get("user"));
-            System.out.println("Database Password: " + config.get("password"));
 
         } catch (IOException | ClassNotFoundException e) {
             JOptionPane.showMessageDialog(null, "Configuração falhou. Mudando para configuração default", "Error", JOptionPane.ERROR_MESSAGE);
-            System.err.println("Failed to retrieve database configuration: " + e.getMessage());
             this.addressDB = "jdbc:postgresql://localhost:5432/postgres";
             this.userDB = "defaultexception";
             this.passwordDB = "12345";
-            System.out.println("Using Default Credentials");
-            System.out.println("Database Address: localhost:5432");
-            System.out.println("Database User: defaultexception");
-            System.out.println("Database Password: 12345");
         }
 
     }
@@ -1098,7 +1076,6 @@ public class GUI extends JFrame {
                 checkStatement.setString(1, username);
                 ResultSet resultSetTest = checkStatement.executeQuery();
                 if(resultSetTest.next()){
-                   System.out.println("Username já existe. Registrando apenas o funcionário.");
                     JOptionPane.showMessageDialog(null, "Este usuário já existe. Registrando apenas o funcionário.", "Atenção", JOptionPane.INFORMATION_MESSAGE);
                 }else {
                     PreparedStatement insertState = connection.prepareStatement("INSERT INTO users(username, password, salt) VALUES (?,?,?)");
@@ -1106,7 +1083,6 @@ public class GUI extends JFrame {
                     insertState.setString(2, hashpassword);
                     insertState.setString(3, salt);
                     insertState.execute();
-                    System.out.println("Usuário registrado");
                 }
 
                 PreparedStatement insertState = connection.prepareStatement("INSERT INTO funcionarios(nome, cpf, endereco, data_nasc, email, crm_coren) VALUES (?,?,?,?,?,?)");
@@ -1117,9 +1093,9 @@ public class GUI extends JFrame {
                 insertState.setString(5, func1.getEmail());
                 insertState.setString(6, func1.crm_coren);
                 insertState.execute();
-                System.out.println("Funcionário registrado");
-
+                JOptionPane.showMessageDialog(null, "Funcionário registrado", "Atenção", JOptionPane.INFORMATION_MESSAGE);
     }
+
     public void searchVax() throws SQLException, NumberFormatException, Exception{
         int id = Integer.parseInt(searchVaxField1.getText());
         query = "SELECT vp.id_vacina, vp.nome_vacina, vp.tipo_vacina, vp.fabricante, l.id_lote, l.data_validade, l.quantidade FROM vacina_padronizada vp INNER JOIN lote l ON vp.id_vacina = l.id_vacina WHERE vp.id_vacina = ?;";
@@ -1199,8 +1175,6 @@ public class GUI extends JFrame {
                 PreparedStatement updatePs = connection.prepareStatement(updateQuery);
                 updatePs.setInt(1, quantidadeAtual - 1);
                 updatePs.setInt(2, loteId);
-                System.out.println(loteId);
-                System.out.println(idVacina);
                 updatePs.setInt(3, idVacina);
                 updatePs.executeUpdate();
 
@@ -1299,26 +1273,6 @@ public class GUI extends JFrame {
         }
         table.setModel(tableModel);
     }
-
-
-    public void resultSetToTableModel(ResultSet rs, JTable table) throws SQLException{
-
-        DefaultTableModel tableModel = new DefaultTableModel();
-        ResultSetMetaData metaData = rs.getMetaData();
-        int columnCount = metaData.getColumnCount();
-        for (int columnIndex = 1; columnIndex <= columnCount; columnIndex++){
-            tableModel.addColumn(metaData.getColumnLabel(columnIndex));
-        }
-        Object[] row = new Object[columnCount];
-        while (rs.next()){
-            for (int i = 0; i < columnCount; i++){
-                row[i] = rs.getObject(i+1);
-            }
-            tableModel.addRow(row);
-        }
-        table.setModel(tableModel);
-    }
-
 
     public static void exportResultSetToPdf(ResultSet resultSet, JFrame parentFrame, String nome_paciente) {
         JFileChooser fileChooser = new JFileChooser();
