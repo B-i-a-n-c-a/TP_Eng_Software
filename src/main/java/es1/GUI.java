@@ -266,7 +266,7 @@ public class GUI extends JFrame {
                         connection.close();
                     } catch (SQLException ex) {
                         JOptionPane.showMessageDialog(null, "Erro ao finalizar conexão.", "Erro", JOptionPane.ERROR_MESSAGE);
-                        ex.printStackTrace(); // Log the exception for debugging
+                        ex.printStackTrace();
                     }
                 } else {
                     System.out.println("Database connection was null.");
@@ -309,7 +309,7 @@ public class GUI extends JFrame {
                         } catch (SQLException ex) {
                             System.err.println("Error closing database connection: " + ex.getMessage());
                             JOptionPane.showMessageDialog(null, "Erro ao finalizar conexão.", "Erro", JOptionPane.ERROR_MESSAGE);
-                            ex.printStackTrace(); // Log the exception for debugging
+                            ex.printStackTrace();
                         }
                     } else {
                         System.out.println("Database connection was null.");
@@ -533,7 +533,6 @@ public class GUI extends JFrame {
             }
         });
 
-        //Lembrete: Ainda não adicionado verificação do id da vacina
         batchConfirmaButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -561,7 +560,7 @@ public class GUI extends JFrame {
                             });
                         } catch (SQLException j) {
                             JOptionPane.showMessageDialog(null, "Erro ao registrar lote: " + j.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
-                            j.printStackTrace(); // Optional: Print stack trace for debugging
+                            j.printStackTrace();
                         } catch (NullPointerException k){
                             JOptionPane.showMessageDialog(null, "Erro: Lote ou conexão nula. Verifique se os dados estão corretos.", "Erro", JOptionPane.ERROR_MESSAGE);
                             k.printStackTrace();
@@ -571,7 +570,7 @@ public class GUI extends JFrame {
                         }
                     } catch (NumberFormatException g) {
                         JOptionPane.showMessageDialog(null, g.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
-                        g.printStackTrace(); // Optional: Print stack trace for debugging
+                        g.printStackTrace();
                     } catch (IllegalArgumentException h) {
                         JOptionPane.showMessageDialog(null, h.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
                         h.printStackTrace();
@@ -940,21 +939,21 @@ public class GUI extends JFrame {
                                 usernameLabel1.setText("Olá, " + username);
                             });
                         } else {
-                            // Incorrect password - provide feedback to the user
+                            // Incorrect password
                             JOptionPane.showMessageDialog(null, "Senha incorreta.", "Erro", JOptionPane.ERROR_MESSAGE);
                         }
                     } else {
-                        // Handle the case where the user doesn't have a salt in the database.
+                        // Handle the case where the user has no salt in the database.
                         JOptionPane.showMessageDialog(null, "Ocorreu um erro ao recuperar a senha da base de dados.", "Erro", JOptionPane.ERROR_MESSAGE);
                     }
 
                 } else {
-                    // User not found - provide feedback to the user
+                    // User not found
                     JOptionPane.showMessageDialog(null, "Usuário não encontrado.", "Erro", JOptionPane.ERROR_MESSAGE);
                 }
 
-                rs.close(); // Close the ResultSet
-                s.close(); // Close the PreparedStatement
+                rs.close();
+                s.close();
 
             } catch (SQLException f) {
                 f.printStackTrace();
@@ -1139,9 +1138,7 @@ public class GUI extends JFrame {
             PreparedStatement insertState = connection.prepareStatement("INSERT INTO lote(id_lote, id_vacina, data_fabricacao, data_validade, quantidade) VALUES (?,?,?,?,?)");
             insertState.setInt(1, lote.id_lote);
             insertState.setInt(2, lote.id_vacina);
-            // Parse and format data_fab
             insertState.setDate(3, parseAndFormatDate(lote.data_fab));
-            // Parse and format data_val
             insertState.setDate(4, parseAndFormatDate(lote.data_val));
             insertState.setInt(5, lote.quantidade);
 
@@ -1224,7 +1221,6 @@ public class GUI extends JFrame {
 
         boolean passwordsMatch = Arrays.equals(passwordArray1, passwordArray2);
 
-        // Clear the password arrays after comparison (security)
         Arrays.fill(passwordArray1, '0');
         Arrays.fill(passwordArray2, '0');
 
@@ -1233,7 +1229,7 @@ public class GUI extends JFrame {
 
     private Date parseAndFormatDate(String dateString) throws DateTimeParseException {
         if (dateString == null || dateString.isEmpty()) {
-            return null; // Handle null or empty date strings as needed
+            return null; // Handle null or empty date
         }
 
         DateTimeFormatter[] formatters = {
@@ -1245,20 +1241,20 @@ public class GUI extends JFrame {
         for (DateTimeFormatter formatter : formatters) {
             try {
                 localDate = LocalDate.parse(dateString, formatter);
-                break; // Found a matching format
+                break; // Found matching format
             } catch (DateTimeParseException e) {
-                // Try the next formatter
+                // Try next formatter
             }
         }
 
         if (localDate == null) {
-            throw new DateTimeParseException("Invalid date format", dateString, 0); //Throw exception if no format matches.
+            throw new DateTimeParseException("Invalid date format", dateString, 0); //Throw exception if no format match.
         }
 
         return Date.valueOf(localDate);
     }
 
-    //This function came from: https://stackoverflow.com/questions/10620448/how-to-populate-jtable-from-resultset
+    //Adaptado de: https://stackoverflow.com/questions/10620448/how-to-populate-jtable-from-resultset
     public void resultSetToTableModel(ResultSet rs, JTable table) throws SQLException{
 
         DefaultTableModel tableModel = new DefaultTableModel();
